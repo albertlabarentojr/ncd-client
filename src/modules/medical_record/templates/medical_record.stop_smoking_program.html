@@ -1,0 +1,8 @@
+<md-tabs md-dynamic-height="true" >
+    <md-tab label="Personal Profile" md-on-select="medicalRecordCtrl.tabOnSelect('personal_profile')"  >
+        <ng-include src="medicalRecordCtrl.tabs.personal_profile" />
+    </md-tab>
+    <md-tab label="Smoking" md-on-select="medicalRecordCtrl.tabOnSelect('smoking')">
+        <ng-include src="medicalRecordCtrl.tabs.smoking" />
+    </md-tab>
+</md-tabs>

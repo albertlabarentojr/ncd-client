@@ -1,0 +1,87 @@
+<div class="md-inline-form" layout="column"  md-theme="docs-dark" ng-controller="FormsController as formController">
+    <md-content layout-padding layout-margin >
+        <div>
+            <span class="md-title">I. Non-modifiable Risk Factors</span>
+            <div layout-gt-sm="row">
+                <md-input-container class="md-block" >
+                   <label>Sakit sa pamilya</label>
+                   <md-select ng-model="selectedVegetables"
+                   md-on-close="clearSearchTerm()"
+                   data-md-container-class="selectdemoSelectHeader"
+                   multiple>
+                   <md-select-header class="demo-select-header">
+                        <input ng-model="searchTerm"
+                            type="search"
+                            placeholder="Search for a vegetable.."
+                            class="demo-header-searchbox _md-text" ng-keydown="searchKeyDown($event)">
+                    </md-select-header>
+                    <md-optgroup label="Sakit sa Pamilya">
+                        <md-option ng-value="disease" ng-repeat="disease in diseases |
+                        filter:searchTerm">{{disease}}</md-option>
+                    </md-optgroup>
+                    </md-select>
+                </md-input-container>
+            </div>
+            <h1 class="md-title">II. Modifiable Risk Factors</h1>
+             <fieldset class="standard">
+                <legend>Nutrisyon</legend>
+                <material-row 
+                    ng-repeat="row in formController.risk_factors_rows.nutrisyon"
+                    questions="formController.forms.risk_factors.nutrisyon" 
+                    start-at="row.startAt" end-at="row.endAt" 
+                    form-model="formController.formModel" submit-model="formController.submitModel">
+                </material-row>
+             </fieldset>
+             <br>
+             <fieldset class="standard">
+                 <legend>Alcohol</legend>
+                 <material-row 
+                    ng-repeat="row in formController.risk_factors_rows.alcohol"
+                    questions="formController.forms.risk_factors.alcohol" 
+                    start-at="row.startAt" end-at="row.endAt" 
+                    form-model="formController.formModel" submit-model="formController.submitModel">
+                </material-row>
+             </fieldset>
+             <br>
+             <fieldset class="standard">
+                <legend>Ehersisyo</legend>
+                <material-row 
+                    ng-repeat="row in formController.risk_factors_rows.ehersisyo"
+                    questions="formController.forms.risk_factors.ehersisyo" 
+                    start-at="row.startAt" end-at="row.endAt" 
+                    form-model="formController.formModel" submit-model="formController.submitModel">
+                </material-row>
+             </fieldset>
+             <br>
+             <fieldset class="standard">
+                <legend>Paninigarilyo</legend>
+                <material-row 
+                    ng-repeat="row in formController.risk_factors_rows.paninigarilyo"
+                    questions="formController.forms.risk_factors.paninigarilyo" 
+                    start-at="row.startAt" end-at="row.endAt" 
+                    form-model="formController.formModel" submit-model="formController.submitModel">
+                </material-row>
+             </fieldset>
+             <br>
+             <fieldset class="standard">
+                <legend>Stress</legend>
+                <material-row 
+                    ng-repeat="row in formController.risk_factors_rows.stress"
+                    questions="formController.forms.risk_factors.stress" 
+                    start-at="row.startAt" end-at="row.endAt" 
+                    form-model="formController.formModel" submit-model="formController.submitModel">
+                </material-row>
+                <!--<ng-include src="formController.templateUrl+'row-md-input.html'" ng-repeat="row in formController.risk_factors_rows.stress"></ng-include>-->
+             </fieldset>
+            <div layout-gt-sm="row">
+            </div>
+        </div>
+        <div layout="row">
+            <div flex></div>
+            <md-button aria-label="save" class="md-mini md-raised" ng-click="formController.submitModel('risk_factors', 'medical_record')">
+                <ng-md-icon icon="save"></ng-md-icon>
+                save
+            </md-button>
+        </div>
+    </md-content>
+</div>

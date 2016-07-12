@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="ncd">
+    <head>
+        <title>Non-Communicable Disease Risk Assesstment</title>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="/node_modules/angular-material/angular-material.css">
+        <link rel="stylesheet" href="/node_modules/angular-material-icons/angular-material-icons.css">
+        <link rel="stylesheet" href="/css/style.css">
+    </head>
+    <body ng-controller="ModuleController">
+    <!-- Banner -->
+        <div layout="column" class="md-whiteframe-1dp">
+            <md-toolbar style="background-color : #1565C0">
+            <div class="md-toolbar-tools">
+                <h2>
+                <span>Non-Communicable Disease Risk Assessment</span>
+                </h2>
+                <span flex></span>
+                <md-button class="md-fab  md-mini md-raised " aria-label="User" >
+                    <ng-md-icon icon="person" style="color : black"></ng-md-icon> 
+                </md-button>
+            </div>
+            </md-toolbar>
+        </div>
+    <!-- End Banner --> 
+
+    <!-- Main View -->
+        <div id="main-wrapper" layout-padding>
+          <div layout="column" ui-view>
+             
+          </div>
+        </div>
+    <!-- End Main View -->
+
+    <script src="dist/lib.js"></script>
+    <script src="dist/bundle.js"></script>
+    </body>
+</html>

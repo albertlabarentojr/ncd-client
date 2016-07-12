@@ -1,0 +1,50 @@
+<md-dialog aria-label="No Inhabitant Selected">
+    <md-toolbar>
+      <div class="md-toolbar-tools">
+        <h2>Search Inhabitant</h2>
+        <span flex></span>
+        <md-button class="md-icon-button" ng-click="ctrl.close()" aria-label="Close">
+          <ng-md-icon icon="close"></ng-md-icon>
+        </md-button>
+      </div>
+    </md-toolbar>
+  <md-dialog-content >
+      <div class="md-dialog-content kiosk-search-content">
+        <!--Search Inhabitant Autocomplete-->
+        <md-autocomplete
+          ng-disabled="ctrl.options.isDisabled"
+          md-no-cache="ctrl.options.noCache"
+          md-selected-item="ctrl.options.selectedItem"
+          md-search-text-change="ctrl.options.searchTextChange(ctrl.options.searchText)"
+          md-search-text="ctrl.options.searchText"
+          md-selected-item-change="ctrl.options.selectedItemChange(item)"
+          md-items="item in ctrl.options.items | filter: { full_name : ctrl.options.searchText}"
+          md-item-text="item.full_name"
+          md-min-length="options.minLength"
+          placeholder="Enter Inhabitant's First / Middle Name / Last Name / Full Name"
+          md-menu-class="autocomplete-custom-template kiosk-search">
+        <md-item-template>
+          <span class="item-title">
+            <!--<md-icon md-svg-icon="img/icons/octicon-repo.svg"></md-icon>-->
+            <span> <b>{{item.full_name}}</b> </span>
+          </span>
+          <span class="item-metadata">
+            <span class="item-metastat">
+              Gender <strong>{{item.gender}}</strong>
+            </span>
+          </span>
+        </md-item-template>
+      </md-autocomplete>
+        <!--End Search Inhabitant Autocomplete-->
+      </div>
+  </md-dialog-content>
+  <md-dialog-actions layout="row">
+      <md-button ng-click="ctrl.gotoState('kiosk.inhabitant.register')">
+       or Register Inhabitant
+      </md-button>
+      <span flex></span>
+      <md-button target="_blank" md-autofocus ng-click="ctrl.continue()" ng-show="ctrl.options.selectedItem" class="md-raised md-primary">
+        Continue
+      </md-button>
+    </md-dialog-actions>
+</md-dialog>

@@ -1,0 +1,42 @@
+{
+    "compilerOptions": {
+        "module": "system",
+        "noImplicitAny": true,
+        "removeComments": true,
+        "preserveConstEnums": true,
+        "outFile": "./dist/bundle.js",
+        "sourceMap": true,
+        "allowSyntheticDefaultImports" : true,
+        "allowJs" : true,
+        "allowUnreachableCode" : true
+    },
+    "exclude": [
+        "node_modules"
+    ],
+    "files" : [
+        "./src/config.ts",
+        "./src/app.ts",
+        "./src/base/BaseController.ts",
+        "./src/base/BaseRepository.ts",
+        "./src/repositories/Mock.ts",
+        "./src/modules/forms/FormBaseController.ts",
+        "./src/modules/kiosk/kiosk.ts",
+        "./src/modules/kiosk/kiosk.controller.ts",
+        "./src/modules/inhabitant/inhabitant.ts",
+        "./src/modules/inhabitant/inhabitant.register.controller.ts",
+        "./src/modules/inhabitant/inhabitant.list.controller.ts",
+        "./src/modules/inhabitant/inhabitant.service.ts",
+        "./src/modules/medical_record/medical_record.ts",
+        "./src/modules/medical_record/medical_record.controller.ts",
+        "./src/modules/forms/IForms.ts",
+        "./src/modules/forms/forms.controller.ts",
+        "./src/modules/forms/forms.service.ts",
+        "./src/modules/user/user.ts",
+        "./src/modules/user/user.controller.ts",
+        "./src/modules/module_name/module.main.ts",
+        "./src/modules/module_name/module.controller.ts",
+        "./src/directives/material_form.directive.ts",
+        "./src/repositories/Inhabitant.ts",
+        "./src/repositories/MedicalRecord.ts"
+    ]
+}

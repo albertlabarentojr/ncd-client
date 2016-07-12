@@ -1,0 +1,17 @@
+<div class="md-inline-form" layout="column"  md-theme="docs-dark" ng-controller="FormsController as formController">
+    <md-content layout-padding layout-margin >
+         <material-row 
+            ng-repeat="row in formController.personal_profile_rows.basic"
+            questions="formController.forms.personal_profile.basic" 
+            start-at="row.startAt" end-at="row.endAt" 
+            form-model="formController.formModel" submit-model="formController.submitModel">
+        </material-row>
+        <div layout="row">
+            <div flex></div>
+            <md-button aria-label="save" class="md-mini md-raised" ng-click="formController.submitModel('personal_profile', 'inhabitant')">
+                <ng-md-icon icon="save"></ng-md-icon>
+                save
+            </md-button>
+        </div>
+   </md-content> 
+</div>

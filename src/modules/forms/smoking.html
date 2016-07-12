@@ -1,0 +1,41 @@
+<div class="md-inline-form" layout="column"  md-theme="docs-dark" ng-controller="FormsController as formController">
+    <md-content layout-padding layout-margin >
+        <fieldset class="standard">
+            <legend>Smoking History</legend>
+            <material-row 
+                ng-repeat="row in formController.smoking_rows.history"
+                questions="formController.forms.smoking.history" 
+                start-at="row.startAt" end-at="row.endAt" 
+                form-model="formController.formModel" submit-model="formController.submitModel">
+            </material-row>
+        </fieldset>
+        <br>
+         <fieldset class="standard">
+            <legend>Current Smoking Status</legend>
+            <material-row 
+                ng-repeat="row in formController.smoking_rows.current"
+                questions="formController.forms.smoking.current" 
+                start-at="row.startAt" end-at="row.endAt" 
+                form-model="formController.formModel" submit-model="formController.submitModel">
+            </material-row>
+        </fieldset>
+        <br>
+         <fieldset class="standard">
+            <legend>Asessment</legend>
+            <material-row 
+                ng-repeat="row in formController.smoking_rows.assessment"
+                questions="formController.forms.smoking.assessment" 
+                start-at="row.startAt" end-at="row.endAt" 
+                form-model="formController.formModel" submit-model="formController.submitModel">
+            </material-row>
+        </fieldset>
+        <div layout="row">
+            <div flex></div>
+            <md-button aria-label="save" class="md-mini md-raised " ng-click="formController.submitModel('smoking', 'medical_record')">
+                <ng-md-icon icon="save"></ng-md-icon>
+                save
+            </md-button>
+        </div>
+    </md-content>
+    
+</div>

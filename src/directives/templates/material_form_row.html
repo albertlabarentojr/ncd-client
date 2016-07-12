@@ -1,0 +1,37 @@
+<span class="md-body-1" ng-if="row.label">{{label}}</span>
+<div layout="column" layout-wrap layout-gt-sm="row" >
+    <md-input-container class="md-block" flex-gt-sm ng-repeat="question in questions | startAt:startAt | limitTo:endAt">
+        <label ng-if="question.type !== 'datepicker'">{{ question.question_name }}</label>
+        <!--Select Options multiple | single-->
+        <md-select ng-model="question.model"
+        md-on-close="clearSearchTerm()"
+        data-md-container-class="selectdemoSelectHeader"
+        multiple ng-if="question.type == 'select_multiple'"
+        name="{{question.choice_name}}">
+            <md-select-header class="demo-select-header">
+                <input ng-model="question.searchTerm"
+                    type="search"
+                    placeholder="Search..."
+                    class="demo-header-searchbox _md-text" ng-keydown="searchKeyDown($event)">
+            </md-select-header>
+            <md-optgroup label="{{question.question_name}}">
+                <md-option ng-value="choice.value" ng-repeat="choice in question.choices |
+                filter:question.searchTerm">{{choice.label}}</md-option>
+            </md-optgroup>
+            </md-select>
+            <md-select ng-model="question.model"
+        md-on-close="clearSearchTerm()"
+        data-md-container-class="selectdemoSelectHeader"
+        ng-if="question.type == 'select_single'"
+        name="{{question.choice_name}}">
+            <md-optgroup label="{{question.question_name}}">
+                <md-option ng-value="choice.value" ng-repeat="choice in question.choices |
+                filter:question.searchTerm">{{choice.label}}</md-option>
+            </md-optgroup>
+            </md-select>
+        <input type="text" ng-model="question.model" ng-if="question.type == 'text'" name="{{question.choice_name}}">
+        <input type="number" ng-model="question.model" ng-if="question.type == 'number'" name="{{question.choice_name}}">
+        <input type="date" ng-model="question.model" ng-if="question.type == 'date'" name="{{question.choice_name}}">
+        <!--End Select Options multiple | single-->
+        </md-input-container>
+</div>

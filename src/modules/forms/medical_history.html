@@ -1,0 +1,30 @@
+<div class="md-inline-form" layout="column"  md-theme="docs-dark" ng-controller="FormsController as formController">
+    <md-content layout-padding layout-margin >
+        <fieldset class="standard">
+            <legend>Karamdaman</legend>
+            <material-row 
+                ng-repeat="row in formController.medical_history_rows.illness"
+                questions="formController.forms.medical_history.illness" 
+                start-at="row.startAt" end-at="row.endAt" 
+                form-model="formController.formModel" submit-model="formController.submitModel">
+            </material-row>
+        </fieldset>
+        <br>
+        <fieldset class="standard">
+            <legend>Pananakit ng dibdib?</legend>
+             <material-row 
+                ng-repeat="row in formController.medical_history_rows.heart_illness"
+                questions="formController.forms.medical_history.heart_illness" 
+                start-at="row.startAt" end-at="row.endAt" 
+                form-model="formController.formModel" submit-model="formController.submitModel">
+            </material-row>
+        </fieldset>
+        <div layout="row">
+            <div flex></div>
+           <md-button aria-label="save" class="md-mini md-raised " ng-click="formController.submitModel('medical_history', 'medical_record')">
+                <ng-md-icon icon="save"></ng-md-icon>
+                save
+            </md-button>
+        </div>
+    </md-content>
+</div>
