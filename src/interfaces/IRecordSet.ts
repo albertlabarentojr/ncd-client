@@ -6,7 +6,7 @@
 module App.Contracts.Response {
     export interface IApiResponseElement {
         _id? : string;
-        medical_record_id? : string;
+        medical_record_id? : string | number;
         [propName : string] : any;
     }
     export interface IApiResponse {

@@ -16,8 +16,11 @@
     "files" : [
         "./src/config.ts",
         "./src/app.ts",
+        "./src/events/GlobalEvents.ts",
         "./src/base/BaseController.ts",
         "./src/base/BaseRepository.ts",
+        "./src/base/EventDispatcher.ts",
+        "./src/base/Notification.ts",
         "./src/repositories/Mock.ts",
         "./src/modules/forms/FormBaseController.ts",
         "./src/modules/kiosk/kiosk.ts",
@@ -36,6 +39,8 @@
         "./src/modules/module_name/module.main.ts",
         "./src/modules/module_name/module.controller.ts",
         "./src/directives/material_form.directive.ts",
+        "./src/directives/user_panel.directive.ts",
+        "./src/directives/delete_confirm.directive.ts",
         "./src/repositories/Inhabitant.ts",
         "./src/repositories/MedicalRecord.ts"
     ]

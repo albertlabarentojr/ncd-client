@@ -5,9 +5,7 @@
 /// <reference path="../config.ts" />
 /// <reference path="../modules/forms/forms.service.ts" />
 
-
-
-module App.Directives.MaterialForm {
+module App.Directives.MaterialForm {    
 
     import IMaterialForm = App.Contracts.MaterialForm;
     import IConstants = App.Contracts.Constants;

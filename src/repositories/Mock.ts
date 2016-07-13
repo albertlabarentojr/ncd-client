@@ -18,10 +18,10 @@ module App.Repository {
         
         recordName : string = 'inhabitants';
                 
-        static $inject = ['Restangular'];
+        static $inject = ['Restangular' ,'$q'];
         
-        constructor(Restangular : restangular.IService) {
-            super(Restangular);
+        constructor(Restangular : restangular.IService, $q : ng.IQService) {
+            super(Restangular, $q);
             
         }
     }

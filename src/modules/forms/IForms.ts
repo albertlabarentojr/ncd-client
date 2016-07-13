@@ -39,6 +39,7 @@ module App.Modules.Forms {
     }
 
     export interface IPersonalProfile extends IForms {
+        inhabitant_id? : string;
         first_name : string;
         middle_name : string;
         last_name : string;

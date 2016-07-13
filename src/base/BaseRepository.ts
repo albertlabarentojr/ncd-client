@@ -31,25 +31,25 @@ module App.Base {
             this.$q = $q;
         }
         
-        getAll = () : angular.IPromise<any[]> => {
+        getAll = (params : any = {}) : angular.IPromise<any[]> => {
             if(this.allowCache) {
-                return this.cache();
+                return this.cache(params);
             } else {
-                return this.Restangular.all(this.recordName).getList();
+                return this.Restangular.all(this.recordName).getList(params);
             }
         }
         
-        find = (id : number)  : restangular.IPromise<any[]> => {
-             return this.Restangular.one(this.recordName, id).get();
+        find = (id : string, params : any = {})  : restangular.IPromise<any[]> => {
+             return this.Restangular.one(this.recordName, id).get(params);
         }
 
-        findPopulate = (id : number, repository : IRepository) : angular.IPromise<any[]> => {
+        findPopulate = (id : string, repository : IRepository) : angular.IPromise<any[]> => {
             let param : any = {};
                 param.populate = repository.recordName;
             return this.Restangular.one(this.recordName, id).get( param );
         }
 
-        findWith = (id : number, relations : Array<IRelation>) : restangular.IElement => {
+        findWith = (id : string, relations : Array<IRelation>) : restangular.IElement => {
             let promise = this.Restangular.one(this.recordName, id);
 
             _.each(relations, (relation : IRelation) => {
@@ -63,7 +63,7 @@ module App.Base {
             return promise;
         }
         
-        update = (id: number, data : IRecordSet.IApiResponseElement) : restangular.IPromise<any[]> => {
+        update = (id: string, data : IRecordSet.IApiResponseElement) : restangular.IPromise<any[]> => {
             return this.Restangular.one(this.recordName, id).put(data);
         }
 
@@ -83,13 +83,13 @@ module App.Base {
                 return this.insert(data);
         }
         
-        remove = (id : number) : restangular.IPromise<any> => {
+        remove = (id : string) : restangular.IPromise<any> => {
             return this.Restangular.one(this.recordName, id).remove();
         }
         
-        cache = () : angular.IPromise<any> => {
+        cache = (params : any = {}) : angular.IPromise<any> => {
             if(!this.hasResults()){
-                return this.Restangular.all(this.recordName).getList().then((response : any) => {
+                return this.Restangular.all(this.recordName).getList(params).then((response : any) => {
                     this.results = response;
                     return this.results;
                 });

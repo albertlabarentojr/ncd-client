@@ -10,7 +10,7 @@ var App;
         Config.Ng = {
             module: {
                 name: 'ncd',
-                dependencies: ['restangular', 'ngMaterial', 'ngMdIcons', 'ui.router', 'ncd.kiosk', 'ncd.inhabitant', 'ncd.medical_record', 'ncd.user']
+                dependencies: ['restangular', 'ngMaterial', 'ngMdIcons', 'ui.router', 'ncd.kiosk', 'ncd.inhabitant', 'ncd.medical_record', 'ncd.user', 'notifications']
             }
         };
         Config.Variables = {
@@ -86,6 +86,8 @@ var App;
             .constant('AppConstants', AppConstants);
     })(Main = App.Main || (App.Main = {}));
 })(App || (App = {}));
+namespace('GLOBAL').SELECTED_USER = 'GLOBAL.SELECTED_INHABITANT';
+namespace('GLOBAL').RESET_SELECTED_USER = 'GLOBAL.RESET_SELECTED_INHABITANT';
 var App;
 (function (App) {
     var Base;
@@ -116,16 +118,18 @@ var App;
                 var _this = this;
                 this.allowCache = false;
                 this.results = new Array();
-                this.getAll = function () {
+                this.getAll = function (params) {
+                    if (params === void 0) { params = {}; }
                     if (_this.allowCache) {
-                        return _this.cache();
+                        return _this.cache(params);
                     }
                     else {
-                        return _this.Restangular.all(_this.recordName).getList();
+                        return _this.Restangular.all(_this.recordName).getList(params);
                     }
                 };
-                this.find = function (id) {
-                    return _this.Restangular.one(_this.recordName, id).get();
+                this.find = function (id, params) {
+                    if (params === void 0) { params = {}; }
+                    return _this.Restangular.one(_this.recordName, id).get(params);
                 };
                 this.findPopulate = function (id, repository) {
                     var param = {};
@@ -163,9 +167,10 @@ var App;
                 this.remove = function (id) {
                     return _this.Restangular.one(_this.recordName, id).remove();
                 };
-                this.cache = function () {
+                this.cache = function (params) {
+                    if (params === void 0) { params = {}; }
                     if (!_this.hasResults()) {
-                        return _this.Restangular.all(_this.recordName).getList().then(function (response) {
+                        return _this.Restangular.all(_this.recordName).getList(params).then(function (response) {
                             _this.results = response;
                             return _this.results;
                         });
@@ -188,17 +193,79 @@ var App;
 })(App || (App = {}));
 var App;
 (function (App) {
+    var Base;
+    (function (Base) {
+        var EventDispatcher = (function () {
+            function EventDispatcher() {
+                var _this = this;
+                this.listeners = {};
+                this.addEventListener = function (type, listener) {
+                    if (!_this.isEventExists(type))
+                        _this.listeners[type] = [];
+                    return _this.listeners[type].push(listener);
+                };
+                this.removeEventListener = function (type, listener) {
+                    if (_this.isEventExists(type)) {
+                        var index = _this.listeners[type].indexOf(listener);
+                        if (index !== -1)
+                            _this.listeners[type].splice(index, 1);
+                    }
+                };
+                this.notify = function (eventName) {
+                    var listeners;
+                    if (typeof arguments[0] !== 'string') {
+                        console.warn('EventDispatcher', 'First params must be an event type (String)');
+                    }
+                    else {
+                        listeners = this.listeners[arguments[0]];
+                        for (var key in listeners) {
+                            listeners[key].apply(this, arguments);
+                        }
+                    }
+                };
+                this.isEventExists = function (type) {
+                    return _this.listeners[type];
+                };
+            }
+            return EventDispatcher;
+        }());
+        Base.EventDispatcher = EventDispatcher;
+    })(Base = App.Base || (App.Base = {}));
+})(App || (App = {}));
+var App;
+(function (App) {
+    var Base;
+    (function (Base) {
+        var EventDispatcher = App.Base.EventDispatcher;
+        var NotificationsProvider = (function (_super) {
+            __extends(NotificationsProvider, _super);
+            function NotificationsProvider() {
+                var _this = this;
+                _super.call(this);
+                this.$get = [function () {
+                        return _this.instance;
+                    }];
+                this.instance = new EventDispatcher();
+            }
+            return NotificationsProvider;
+        }(EventDispatcher));
+        angular.module('notifications', [])
+            .provider('Notifications', NotificationsProvider);
+    })(Base = App.Base || (App.Base = {}));
+})(App || (App = {}));
+var App;
+(function (App) {
     var Repository;
     (function (Repository) {
         var BaseRepository = App.Base.BaseRepository;
         var Mock = (function (_super) {
             __extends(Mock, _super);
-            function Mock(Restangular) {
-                _super.call(this, Restangular);
+            function Mock(Restangular, $q) {
+                _super.call(this, Restangular, $q);
                 this.allowCache = true;
                 this.recordName = 'inhabitants';
             }
-            Mock.$inject = ['Restangular'];
+            Mock.$inject = ['Restangular', '$q'];
             return Mock;
         }(BaseRepository));
         Repository.Mock = Mock;
@@ -337,10 +404,16 @@ var App;
         var Inhabitant = (function (_super) {
             __extends(Inhabitant, _super);
             function Inhabitant(Restangular, $q) {
+                var _this = this;
                 _super.call(this, Restangular, $q);
-                this.allowCache = true;
+                this.allowCache = false;
                 this.recordName = 'inhabitants';
                 this.default_id = 'inhabitant_id';
+                this.removeItem = function (key, value) {
+                    return _.findIndex(_this.results, function (item) {
+                        return item[key] == value;
+                    });
+                };
             }
             Inhabitant.$inject = ['Restangular', '$q'];
             return Inhabitant;
@@ -356,7 +429,7 @@ var App;
         var Forms;
         (function (Forms) {
             var FormsService = (function () {
-                function FormsService(Inhabitant, MedicalRecord, $mdToast) {
+                function FormsService(Inhabitant, MedicalRecord, $mdToast, Notfications) {
                     var _this = this;
                     this.dataset = {};
                     this.save = function (formdata, formName, recordType) {
@@ -370,14 +443,18 @@ var App;
                             }
                         });
                         _this.dataset = _.extend(_this.dataset, toBeSaved);
-                        if (recordType == 'inhabitant')
+                        if (recordType == 'inhabitant') {
                             return _this.Inhabitant.save(_this.dataset).then(_this.updatedInhabitant.bind(_this));
-                        else if (recordType == 'medical_record')
+                        }
+                        else if (recordType == 'medical_record') {
+                            _this.dataset.inhabitants = _this.dataset.inhabitant_id;
                             return _this.MedicalRecord.save(_this.dataset).then(_this.updatedMedicalRecord.bind(_this));
+                        }
                     };
                     this.updatedInhabitant = function (resp) {
                         _this.updateDataSet(resp);
                         console.log(_this.dataset);
+                        _this.Notifications.notify('GLOBAL.SELECTED_INHABITANT');
                         _this.notify('Saved Inhabitant Record');
                     };
                     this.updatedMedicalRecord = function (resp) {
@@ -450,6 +527,7 @@ var App;
                     this.resetLatestMedicalRecord = function () {
                         if (_this.hasMedicalRecord()) {
                             delete _this.dataset.medical_records;
+                            delete _this.dataset.medical_record_id;
                         }
                         return _this.dataset;
                     };
@@ -468,11 +546,16 @@ var App;
                     this.hasInhabitant = function () {
                         return _.has(_this.dataset, _this.Inhabitant.default_id);
                     };
+                    this.updateDatasetWithPopulate = function (dataset, Repository) {
+                        dataset = _.extend(dataset, dataset[Repository.recordName]);
+                        _this.updateDataSet(dataset);
+                    };
                     this.Inhabitant = Inhabitant;
                     this.MedicalRecord = MedicalRecord;
                     this.$mdToast = $mdToast;
+                    this.Notifications = Notfications;
                 }
-                FormsService.$inject = ['Inhabitant', 'MedicalRecord', '$mdToast'];
+                FormsService.$inject = ['Inhabitant', 'MedicalRecord', '$mdToast', 'Notifications'];
                 return FormsService;
             }());
             Forms.FormsService = FormsService;
@@ -487,7 +570,7 @@ var App;
         var BaseController = App.Base.BaseController;
         var SearchDialog = (function (_super) {
             __extends(SearchDialog, _super);
-            function SearchDialog($scope, $rootScope, $mdDialog, Inhabitant, $state, continueState, FormService, continueCallback) {
+            function SearchDialog($scope, $rootScope, $mdDialog, Inhabitant, $state, continueState, FormService, continueCallback, Notifications) {
                 var _this = this;
                 _super.call(this, $scope, $rootScope);
                 this.loadInhabitants = function () {
@@ -504,6 +587,7 @@ var App;
                 this.continue = function () {
                     _this.close();
                     _this.FormService.updateDataSet(_this.options.selectedItem);
+                    _this.Notifications.notify('GLOBAL.SELECTED_INHABITANT');
                     _this.continueCallback(_this.continueState);
                 };
                 this.gotoState = function (stateName) {
@@ -518,6 +602,7 @@ var App;
                 this.$state = $state;
                 this.FormService = FormService;
                 this.continueCallback = continueCallback;
+                this.Notifications = Notifications;
                 this.options = {
                     isDisabled: false,
                     noCache: true,
@@ -530,7 +615,7 @@ var App;
                 };
                 this.loadInhabitants();
             }
-            SearchDialog.$inject = ['$scope', '$rootScope', '$mdDialog', 'Inhabitant', '$state', 'continueState', 'FormService', 'continueCallback'];
+            SearchDialog.$inject = ['$scope', '$rootScope', '$mdDialog', 'Inhabitant', '$state', 'continueState', 'FormService', 'continueCallback', 'Notifications'];
             return SearchDialog;
         }(BaseController));
         var Kiosk = (function (_super) {
@@ -559,18 +644,22 @@ var App;
         }(BaseController));
         var InhabitantKioskController = (function (_super) {
             __extends(InhabitantKioskController, _super);
-            function InhabitantKioskController($scope, $rootScope, $mdSidenav, $state, FormService) {
+            function InhabitantKioskController($scope, $rootScope, $mdSidenav, $state, FormService, Notifications) {
                 var _this = this;
                 _super.call(this, $scope, $rootScope, $mdSidenav, $state);
                 this.panelTitle = 'Inhabitant Kiosk';
                 this.navigateAsNewInhabitant = function (stateName) {
-                    console.log('As new inhabitant');
                     _this.FormService.resetDataSet();
+                    _this.Notifications.notify('GLOBAL.RESET_SELECTED_INHABITANT');
+                    _this.navigateTo.apply(_this, [stateName]);
+                };
+                this.navigateTo = function (stateName) {
                     _this.$state.go(stateName);
                 };
                 this.FormService = FormService;
+                this.Notifications = Notifications;
             }
-            InhabitantKioskController.$inject = ['$scope', '$rootScope', '$mdSidenav', '$state', 'FormService'];
+            InhabitantKioskController.$inject = ['$scope', '$rootScope', '$mdSidenav', '$state', 'FormService', 'Notifications'];
             return InhabitantKioskController;
         }(Kiosk));
         var MedicalRecordKioskController = (function (_super) {
@@ -581,11 +670,16 @@ var App;
                 this.panelTitle = 'Medical Record Kiosk';
                 this.navigateToMedicalRecord = function (stateName) {
                     var updateMedicalRecord = function (sn) {
-                        _this.Inhabitant.findPopulate(_this.FormService.dataset.inhabitant_id, _this.MedicalRecord)
-                            .then(function (resp) {
-                            _this.FormService.updateDataSet(resp[_this.MedicalRecord.recordName]);
+                        if (!_.has(_this.FormService.dataset, _this.Inhabitant.recordName)) {
+                            _this.Inhabitant.findPopulate(_this.FormService.dataset.inhabitant_id, _this.MedicalRecord)
+                                .then(function (resp) {
+                                _this.FormService.updateDataSet(resp[_this.MedicalRecord.recordName]);
+                                _this.$state.go(sn);
+                            });
+                        }
+                        else {
                             _this.$state.go(sn);
-                        });
+                        }
                     };
                     if (_this.FormService.hasMedicalRecord()) {
                         updateMedicalRecord(stateName);
@@ -597,7 +691,7 @@ var App;
                         }
                         else {
                             _this.$mdDialog.show({
-                                controller: 'SearchDialog',
+                                controller: 'SearchDialogController',
                                 controllerAs: 'ctrl',
                                 locals: {
                                     continueState: stateName,
@@ -632,7 +726,7 @@ var App;
             return MedicalRecordKioskController;
         }(Kiosk));
         Controller.MedicalRecordKioskController = MedicalRecordKioskController;
-        angularKioskModule.controller('SearchDialog', SearchDialog);
+        angularKioskModule.controller('SearchDialogController', SearchDialog);
         angularKioskModule.controller('InhabitantKioskController', InhabitantKioskController);
         angularKioskModule.controller('MedicalRecordKioskController', MedicalRecordKioskController);
     })(Controller = App.Controller || (App.Controller = {}));
@@ -719,7 +813,7 @@ var App;
             var BaseController = App.Base.BaseController;
             var InhabitantListController = (function (_super) {
                 __extends(InhabitantListController, _super);
-                function InhabitantListController($scope, $rootScope, InhabitantService, $state) {
+                function InhabitantListController($scope, $rootScope, InhabitantService, $state, Notifications, FormService) {
                     var _this = this;
                     _super.call(this, $scope, $rootScope);
                     this.inhabitants = [];
@@ -730,14 +824,28 @@ var App;
                         _this.inhabitants = resp;
                     };
                     this.navigateToProfile = function (inhabitant) {
+                        _this.FormService.resetDataSet();
                         _this.InhabitantService.updateInhabitant(inhabitant);
+                        _this.Notifications.notify('GLOBAL.SELECTED_INHABITANT');
                         _this.$state.go('kiosk.inhabitant.register');
                     };
+                    this.navigateToMedicalRecords = function (inhabitant) {
+                        _this.InhabitantService.updateInhabitant(inhabitant);
+                        _this.$state.go('kiosk.medical_record.inhabitant', { inhabitant_id: inhabitant.inhabitant_id });
+                    };
+                    this.deleteInhabitant = function (inhabitant) {
+                        _this.InhabitantService.deleteInhabitant(inhabitant.inhabitant_id)
+                            .then(function () {
+                            _this.fetchInhabitants();
+                        });
+                    };
                     this.InhabitantService = InhabitantService;
+                    this.Notifications = Notifications;
                     this.$state = $state;
+                    this.FormService = FormService;
                     this.fetchInhabitants();
                 }
-                InhabitantListController.$inject = ['$scope', '$rootScope', 'InhabitantService', '$state'];
+                InhabitantListController.$inject = ['$scope', '$rootScope', 'InhabitantService', '$state', 'Notifications', 'FormService'];
                 return InhabitantListController;
             }(BaseController));
             inhabitantModule.controller('InhabitantListController', InhabitantListController);
@@ -758,6 +866,9 @@ var App;
                     };
                     this.updateInhabitant = function (inhabitant) {
                         _this.FormService.updateDataSet(inhabitant);
+                    };
+                    this.deleteInhabitant = function (inhabitant_id) {
+                        return _this.Inhabitant.remove(inhabitant_id);
                     };
                     this.Inhabitant = Inhabitant;
                     this.MedicalRecord = MedicalRecord;
@@ -813,6 +924,19 @@ var App;
                     data: {
                         panelTitle: 'Non-Communicable Disease Risk Assessment Form'
                     }
+                })
+                    .state('kiosk.medical_record.inhabitant', {
+                    url: '/Inhabitant/:inhabitant_id',
+                    views: {
+                        'medical_record': {
+                            templateUrl: templateUrl + 'medical_record.inhabitant.html',
+                            controller: 'MedicalRecordController',
+                            controllerAs: 'medicalRecordCtrl'
+                        }
+                    },
+                    data: {
+                        panelTitle: 'Non-Communicable Disease Risk Assessment Form'
+                    }
                 });
             }
             MedicalRecordConfig.$inject = ['$urlRouterProvider', '$stateProvider', 'MedicalRecordConstants', '$mdThemingProvider'];
@@ -831,7 +955,8 @@ var App;
             var BaseController = App.Modules.Forms.BaseFormController;
             var MedicalRecordController = (function (_super) {
                 __extends(MedicalRecordController, _super);
-                function MedicalRecordController($scope, $rootScope, AppConstants, $element, FormService, Inhabitant, MedicalRecord) {
+                function MedicalRecordController($scope, $rootScope, AppConstants, $element, FormService, Inhabitant, MedicalRecord, $state, Notifications) {
+                    var _this = this;
                     _super.call(this, $scope, $rootScope, AppConstants);
                     this.forms = [
                         'risk_factors',
@@ -839,12 +964,43 @@ var App;
                         'personal_profile',
                         'smoking'
                     ];
+                    this.medical_records = [];
+                    this.fetchInhabitantMedicalRecord = function () {
+                        if (_this.$state.current.name == 'kiosk.medical_record.inhabitant') {
+                            var inhabitant_id = _this.$state.params['inhabitant_id'];
+                            _this.MedicalRecord.getAll({ inhabitant_id: inhabitant_id }).then(function (resp) {
+                                _this.medical_records = resp;
+                                _this.Notifications.notify('GLOBAL.SELECTED_INHABITANT');
+                            });
+                        }
+                    };
+                    this.navigateToMedicalForms = function (medical_record) {
+                        var inhabitant_id = _this.$state.params['inhabitant_id'];
+                        _this.FormService.resetDataSet();
+                        _this.MedicalRecord.findPopulate(medical_record.medical_record_id, _this.Inhabitant)
+                            .then(function (resp) {
+                            _this.FormService.resetDataSet();
+                            console.log(_this.FormService.dataset);
+                            _this.FormService.updateDatasetWithPopulate(resp, _this.Inhabitant);
+                            console.log(_this.FormService.dataset);
+                            _this.$state.go('kiosk.medical_record');
+                        });
+                    };
+                    this.deleteMedicalRecord = function (medical_record) {
+                        _this.MedicalRecord.remove(medical_record.medical_record_id)
+                            .then(function () {
+                            _this.fetchInhabitantMedicalRecord();
+                        });
+                    };
                     this.renderTabs();
                     this.FormService = FormService;
                     this.Inhabitant = Inhabitant;
                     this.MedicalRecord = MedicalRecord;
+                    this.$state = $state;
+                    this.Notifications = Notifications;
+                    this.fetchInhabitantMedicalRecord();
                 }
-                MedicalRecordController.$inject = ['$scope', '$rootScope', 'AppConstants', '$element', 'FormService', 'Inhabitant', 'MedicalRecord'];
+                MedicalRecordController.$inject = ['$scope', '$rootScope', 'AppConstants', '$element', 'FormService', 'Inhabitant', 'MedicalRecord', '$state', 'Notifications'];
                 return MedicalRecordController;
             }(BaseController));
             medicalRecModule.controller('MedicalRecordController', MedicalRecordController);
@@ -1805,6 +1961,139 @@ var App;
             }());
             angularModule.directive('materialRow', MaterialRow.factory());
         })(MaterialForm = Directives.MaterialForm || (Directives.MaterialForm = {}));
+    })(Directives = App.Directives || (App.Directives = {}));
+})(App || (App = {}));
+var App;
+(function (App) {
+    var Directives;
+    (function (Directives) {
+        var UserPanel;
+        (function (UserPanel) {
+            var config = App.Config.Variables;
+            var BaseController = App.Base.BaseController;
+            var UserPanelController = (function (_super) {
+                __extends(UserPanelController, _super);
+                function UserPanelController($scope, $rootScope, FormService, Notifications, $state) {
+                    var _this = this;
+                    _super.call(this, $scope, $rootScope);
+                    this.upanelData = {
+                        isHidden: true
+                    };
+                    this.defineListeners = function () {
+                        _this.Notifications.addEventListener('GLOBAL.SELECTED_INHABITANT', _this.showActiveInhabitant.bind(_this));
+                        _this.Notifications.addEventListener('GLOBAL.RESET_SELECTED_INHABITANT', _this.close.bind(_this));
+                    };
+                    this.showActiveInhabitant = function () {
+                        if (_this.FormService.hasInhabitant()) {
+                            _this.hidePanel(false);
+                            _this.upanelData.inhabitant = _this.FormService.dataset;
+                            _this.upanelData.showEditInhabitantBtn = true;
+                            _this.showMedicalRecord();
+                        }
+                        else {
+                            _this.hidePanel();
+                            _this.upanelData.showEditInhabitantBtn = false;
+                        }
+                    };
+                    this.showMedicalRecord = function () {
+                        if (!_this.FormService.hasMedicalRecord()) {
+                            console.log('No Medical Records to present');
+                            _this.upanelData.showMedicalRecBtn = false;
+                        }
+                        else {
+                            _this.upanelData.showMedicalRecBtn = true;
+                        }
+                    };
+                    this.hidePanel = function (isHidden) {
+                        if (isHidden === void 0) { isHidden = true; }
+                        _this.upanelData.isHidden = isHidden;
+                    };
+                    this.close = function () {
+                        _this.FormService.resetDataSet();
+                        _this.hidePanel();
+                        _this.$state.go('kiosk.inhabitant.list');
+                    };
+                    this.addMedicalRecord = function () {
+                        _this.FormService.resetLatestMedicalRecord();
+                        _this.$state.go('kiosk.medical_record');
+                        console.log(_this.FormService.dataset);
+                    };
+                    this.FormService = FormService;
+                    this.Notifications = Notifications;
+                    this.$state = $state;
+                    this.defineListeners();
+                    this.showActiveInhabitant();
+                }
+                UserPanelController.$inject = ['$scope', '$rootScope', 'FormService', 'Notifications', '$state'];
+                return UserPanelController;
+            }(BaseController));
+            angularModule.controller('UserPanelController', UserPanelController);
+            var UserPanelDirective = (function () {
+                function UserPanelDirective(AppConstants, FormService) {
+                    this.restrict = 'EA';
+                    this.templateUrl = config.basePath + 'directives/templates/user_panel.html';
+                    this.scope = {
+                        presentKiosk: '@'
+                    };
+                    this.controller = 'UserPanelController';
+                    this.controllerAs = 'ctrl';
+                    this.AppConstants = AppConstants;
+                    this.FormService = FormService;
+                }
+                UserPanelDirective.factory = function () {
+                    var directive = function (AppConstants, FormService) { return new UserPanelDirective(AppConstants, FormService); };
+                    directive.$inject = ['AppConstants', 'FormService'];
+                    return directive;
+                };
+                return UserPanelDirective;
+            }());
+            angularModule.directive('userPanel', UserPanelDirective.factory());
+        })(UserPanel = Directives.UserPanel || (Directives.UserPanel = {}));
+    })(Directives = App.Directives || (App.Directives = {}));
+})(App || (App = {}));
+var App;
+(function (App) {
+    var Directives;
+    (function (Directives) {
+        var DeleteConfirm;
+        (function (DeleteConfirm) {
+            var DeleteConfirmDirective = (function () {
+                function DeleteConfirmDirective(AppConstants, $mdDialog) {
+                    var _this = this;
+                    this.restrict = 'EA';
+                    this.link = function (scope, elem, attrs) {
+                        elem.bind('click', function (ev) {
+                            var confirm = _this.$mdDialog.confirm()
+                                .title(scope.deleteTitle)
+                                .textContent(scope.deleteContent)
+                                .ariaLabel('Delete')
+                                .targetEvent(ev)
+                                .ok('Delete')
+                                .cancel('Cancel');
+                            _this.$mdDialog.show(confirm).then(function () {
+                                scope.confirmed();
+                            }, function () {
+                                console.log('Canceled Delete Action');
+                            });
+                        });
+                    };
+                    this.scope = {
+                        confirmed: '&',
+                        deleteTitle: '@',
+                        deleteContent: '@'
+                    };
+                    this.AppConstants = AppConstants;
+                    this.$mdDialog = $mdDialog;
+                }
+                DeleteConfirmDirective.factory = function () {
+                    var directive = function (AppConstants, $mdDialog) { return new DeleteConfirmDirective(AppConstants, $mdDialog); };
+                    directive.$inject = ['AppConstants', '$mdDialog'];
+                    return directive;
+                };
+                return DeleteConfirmDirective;
+            }());
+            angularModule.directive('deleteConfirmDialog', DeleteConfirmDirective.factory());
+        })(DeleteConfirm = Directives.DeleteConfirm || (Directives.DeleteConfirm = {}));
     })(Directives = App.Directives || (App.Directives = {}));
 })(App || (App = {}));
 //# sourceMappingURL=bundle.js.map

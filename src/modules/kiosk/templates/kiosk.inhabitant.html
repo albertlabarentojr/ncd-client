@@ -3,7 +3,7 @@
         <div class="md-toolbar-tools" md-colors="{background : 'teal-600'}">
             <h3>{{ panelTitle }}</h3>
             <span flex></span>
-            <md-button aria-label="save" class="md-mini|md-fab">
+            <!--<md-button aria-label="save" class="md-mini|md-fab">
                 <ng-md-icon icon="save"></ng-md-icon>
                 save
             </md-button>
@@ -12,10 +12,14 @@
               <md-tooltip md-direction="left">
                 Tools
               </md-tooltip> 
-            </md-button>
+            </md-button>-->
           
         </div>
     </md-toolbar>
+
+    <!--User Panel Directive-->
+        <user-panel present-kiosk="inhabitant"></user-panel>
+    <!--End User Panel Directive-->
 
     <div>
         <div ui-view="inhabitant">
@@ -28,7 +32,7 @@
             <md-button ng-click="inhabitantController.navigateAsNewInhabitant('kiosk.inhabitant.list')" class="md-cornered md-button md-ink-ripple md-raised" type="button" md-colors="{ background : 'blue-700'}">
                 Update Inhabitant
             </md-button>
-            <md-button ng-click="inhabitantController.navigateAsNewInhabitant('kiosk.inhabitant.list')" class="md-cornered md-button md-ink-ripple md-raised" type="button" md-colors="{ background : 'blue-700'}">
+            <md-button ng-click="inhabitantController.navigateTo('kiosk.inhabitant.list')" class="md-cornered md-button md-ink-ripple md-raised" type="button" md-colors="{ background : 'blue-700'}">
                 Show Inhabitants
             </md-button>
         </div>

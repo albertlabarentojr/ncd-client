@@ -1,0 +1,39 @@
+<md-toolbar md-colors="{ background : 'blue-900' }" class="md-whiteframe-3dp" ng-hide="ctrl.upanelData.isHidden"> 
+    <div class="md-toolbar-tools">
+    <md-button class="md-icon-button" aria-label="person" ui-sref="kiosk.inhabitant.register">
+        <ng-md-icon icon="person"></ng-md-icon>
+    </md-button>
+    <h2>
+        <span>{{ ctrl.upanelData.inhabitant.full_name }}</span>
+    </h2>
+    <span flex></span>
+
+    <!--Inhabitant Toolbars-->
+        
+    <!--End Inhabitant Toolbars-->
+
+    <!--Medical Record Toolbars-->
+    <div ng-show="presentKiosk == 'medical_record'">
+        <md-button class="md-icon-button" aria-label="add" ng-click="ctrl.addMedicalRecord()">
+            <ng-md-icon icon="add"></ng-md-icon>
+            <md-tooltip md-direction="bottom">
+                Add Medical Record
+            </md-tooltip>
+        </md-button>
+    </div>
+    <!--End Medical Record Toolbars-->
+
+    <md-button class="md-icon-button" aria-label="More" ui-sref="kiosk.medical_record.inhabitant({ inhabitant_id : ctrl.upanelData.inhabitant.inhabitant_id })">
+        <ng-md-icon icon="folder_shared"></ng-md-icon>
+        <md-tooltip md-direction="bottom">
+          Show Medical Records
+        </md-tooltip>
+    </md-button>
+    <md-button class="md-icon-button" aria-label="Close" ng-click="ctrl.close()">
+        <ng-md-icon icon="close"></ng-md-icon>
+        <md-tooltip md-direction="bottom">
+          Reset Inhabitant
+        </md-tooltip>
+    </md-button>
+    </div>
+</md-toolbar>

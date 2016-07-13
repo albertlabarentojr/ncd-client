@@ -3,7 +3,7 @@
         <div class="md-toolbar-tools" md-colors="{background : 'teal-600'}">
             <h3>{{ panelTitle }}</h3>
             <span flex></span>
-            <md-button aria-label="save" class="md-mini  ">
+            <!--<md-button aria-label="save" class="md-mini  ">
                 <ng-md-icon icon="save"></ng-md-icon>
                 save
             </md-button>
@@ -12,9 +12,13 @@
               <md-tooltip md-direction="left">
                 Tools
               </md-tooltip> 
-          </md-button>
+          </md-button>-->
         </div>
     </md-toolbar>
+
+    <!--User Panel Directive-->
+        <user-panel present-kiosk="medical_record"></user-panel>
+    <!--End User Panel Directive-->
 
     <div>
         <div ui-view="medical_record">

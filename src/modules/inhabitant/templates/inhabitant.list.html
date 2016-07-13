@@ -8,10 +8,20 @@
                Edit / Show Profile 
             </md-tooltip>
         </md-button> 
-        <md-button aria-label="button-label" class="md-mini">
+        <md-button aria-label="button-label" class="md-mini" ng-click="inhabitantList.navigateToMedicalRecords(inhabitant)">
             <ng-md-icon icon="folder_shared" style="color : black"></ng-md-icon>
             <md-tooltip md-direction="bottom">
                Show Medical Records 
+            </md-tooltip>
+        </md-button>
+        <md-button aria-label="button-label" class="md-mini" 
+            delete-confirm-dialog 
+            delete-title="Would you like to delete Inhabitant named {{inhabitant.full_name}} ?"
+            delete-content="Deleted Inhabintant will be permanently removed including all medical records."
+            confirmed="inhabitantList.deleteInhabitant(inhabitant)" >
+            <ng-md-icon icon="delete" style="color : black"></ng-md-icon>
+            <md-tooltip md-direction="bottom">
+               Delete
             </md-tooltip>
         </md-button>
     </md-list-item>

@@ -11,7 +11,8 @@ module.exports = {
         "./node_modules/angular-material/angular-material.min.js",
         "./node_modules/lodash/lodash.min.js",
         "./node_modules/restangular/dist/restangular.min.js",
-        "./node_modules/angular-ui-router/release/angular-ui-router.min.js"
+        "./node_modules/angular-ui-router/release/angular-ui-router.min.js",
+        "./lib/namespace.js"
     ],
     output : {
         filename : './dist/lib.js'

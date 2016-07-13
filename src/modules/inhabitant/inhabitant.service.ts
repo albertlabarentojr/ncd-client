@@ -37,6 +37,10 @@ module App.Services.Inhabitant {
             this.FormService.updateDataSet(inhabitant);
         }
 
+        deleteInhabitant = (inhabitant_id : string) => {
+           return  this.Inhabitant.remove(inhabitant_id);
+        }
+
     }
     
     inhabitantModule.service('InhabitantService', InhabitantService);

@@ -3,6 +3,8 @@
 /// <reference path="../../config.ts"/>
 /// <reference path="../../repositories/MedicalRecord.ts" />
 /// <reference path="../forms/forms.service.ts" />
+/// <reference path="../../base/EventDispatcher.ts" />
+
 
 module App.Controller {
     
@@ -10,6 +12,7 @@ module App.Controller {
     import IRepository = App.Repository;
     import FormService = App.Services.Forms.FormsService;
     import IConstants = App.Contracts.Constants;
+    import IEventDispatcher = App.Base.IEventDispatcher;
 
     type searchOptions = {
         isDisabled : boolean,
@@ -24,7 +27,7 @@ module App.Controller {
 
     class SearchDialog extends BaseController {
 
-        static $inject : string[] = ['$scope', '$rootScope', '$mdDialog', 'Inhabitant', '$state', 'continueState', 'FormService', 'continueCallback'];
+        static $inject : string[] = ['$scope', '$rootScope', '$mdDialog', 'Inhabitant', '$state', 'continueState', 'FormService', 'continueCallback', 'Notifications'];
         
         $mdDialog : any;
 
@@ -40,7 +43,9 @@ module App.Controller {
 
         FormService : FormService;
 
-        constructor($scope : ng.IScope, $rootScope : ng.IRootScopeService, $mdDialog : any, Inhabitant : IRepository.Inhabitant, $state : ng.ui.IStateService, continueState : string, FormService : FormService, continueCallback : (stateName : string) => void) {
+        Notifications : IEventDispatcher;
+
+        constructor($scope : ng.IScope, $rootScope : ng.IRootScopeService, $mdDialog : any, Inhabitant : IRepository.Inhabitant, $state : ng.ui.IStateService, continueState : string, FormService : FormService, continueCallback : (stateName : string) => void, Notifications : IEventDispatcher) {
             super($scope, $rootScope);
             this.$mdDialog = $mdDialog;
             this.Inhabitant = Inhabitant;
@@ -48,6 +53,7 @@ module App.Controller {
             this.$state = $state;
             this.FormService = FormService;
             this.continueCallback = continueCallback;
+            this.Notifications = Notifications;
             this.options = {
                 isDisabled : false,
                 noCache : true,
@@ -79,6 +85,7 @@ module App.Controller {
         continue = () => {
             this.close();
             this.FormService.updateDataSet(this.options.selectedItem);
+            this.Notifications.notify('GLOBAL.SELECTED_INHABITANT');
             this.continueCallback(this.continueState);
         }
 
@@ -126,20 +133,27 @@ module App.Controller {
     
     class InhabitantKioskController extends Kiosk {
         
-        static $inject : string[] = [ '$scope', '$rootScope', '$mdSidenav', '$state', 'FormService' ];
+        static $inject : string[] = [ '$scope', '$rootScope', '$mdSidenav', '$state', 'FormService', 'Notifications' ];
 
         panelTitle = 'Inhabitant Kiosk';
 
         FormService : FormService;
 
-        constructor($scope : ng.IScope, $rootScope : ng.IRootScopeService, $mdSidenav : any, $state : ng.ui.IStateService, FormService : FormService) {
+        Notifications : IEventDispatcher;
+
+        constructor($scope : ng.IScope, $rootScope : ng.IRootScopeService, $mdSidenav : any, $state : ng.ui.IStateService, FormService : FormService, Notifications : IEventDispatcher) {
             super($scope, $rootScope, $mdSidenav, $state);
             this.FormService = FormService;
+            this.Notifications = Notifications;
         }
 
         navigateAsNewInhabitant = (stateName : string) => {
-            console.log('As new inhabitant');
             this.FormService.resetDataSet();
+            this.Notifications.notify('GLOBAL.RESET_SELECTED_INHABITANT');
+            this.navigateTo.apply(this, [stateName]);
+        }
+
+        navigateTo = (stateName : string) => {
             this.$state.go(stateName);
         }
     }
@@ -178,11 +192,15 @@ module App.Controller {
         navigateToMedicalRecord = (stateName : string) => {
             // has latest medical record
             let updateMedicalRecord = (sn : string) => {
-                this.Inhabitant.findPopulate(this.FormService.dataset.inhabitant_id, this.MedicalRecord)
+                if (!_.has(this.FormService.dataset, this.Inhabitant.recordName)) {
+                    this.Inhabitant.findPopulate(this.FormService.dataset.inhabitant_id, this.MedicalRecord)
                     .then((resp : any) => {
                         this.FormService.updateDataSet(resp[this.MedicalRecord.recordName]);
                         this.$state.go(sn);
                     });
+                } else {
+                    this.$state.go(sn);
+                }
             }
             if(this.FormService.hasMedicalRecord()) {
                 updateMedicalRecord(stateName);
@@ -192,7 +210,7 @@ module App.Controller {
                     this.$state.go(stateName);
                 } else {
                     this.$mdDialog.show({
-                        controller : 'SearchDialog',
+                        controller : 'SearchDialogController',
                         controllerAs : 'ctrl',
                         locals : {
                             continueState : stateName,
@@ -220,7 +238,7 @@ module App.Controller {
         }
     }
     
-    angularKioskModule.controller('SearchDialog', SearchDialog);
+    angularKioskModule.controller('SearchDialogController', SearchDialog);
     angularKioskModule.controller('InhabitantKioskController', InhabitantKioskController);
     angularKioskModule.controller('MedicalRecordKioskController', MedicalRecordKioskController);
 }

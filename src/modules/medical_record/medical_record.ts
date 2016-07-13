@@ -45,6 +45,19 @@ module App.Modules.MedicalRecord {
                 data : {
                     panelTitle : 'Non-Communicable Disease Risk Assessment Form'
                 }
+            })
+            .state('kiosk.medical_record.inhabitant', {
+                url : '/Inhabitant/:inhabitant_id',
+                views : {
+                    'medical_record' : {
+                        templateUrl : templateUrl+'medical_record.inhabitant.html',
+                        controller : 'MedicalRecordController',
+                        controllerAs : 'medicalRecordCtrl'
+                    }
+                },
+                data : {
+                    panelTitle : 'Non-Communicable Disease Risk Assessment Form'
+                }
             });
     }
 

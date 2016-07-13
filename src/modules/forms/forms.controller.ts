@@ -25,18 +25,6 @@ module App.Modules.Forms {
             risk_factors : {}
         }
 
-        // formModel : IRepository.InhabitantResponse = {
-        //     first_name : null,
-        //     middle_name : null,
-        //     last_name : null,
-        //     gender : null,
-        //     birthdate : null,
-        //     barangay : null,
-        //     purok_street : null,
-        //     city : null,
-        //     record_no : null
-        // };
-
         templateUrl : string = 'forms/templates/';
 
         AppConstants : IContants.AppConstants;

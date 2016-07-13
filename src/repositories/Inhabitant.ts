@@ -29,7 +29,7 @@ module App.Repository {
 
     export class Inhabitant extends BaseRepository implements IRepository.ICacheable {
         
-        allowCache = true;
+        allowCache = false;
 
         recordName = 'inhabitants';
 
@@ -39,6 +39,12 @@ module App.Repository {
         
         constructor(Restangular : restangular.IService, $q : ng.IQService) {
             super(Restangular, $q);
+        }
+
+        removeItem = (key : string, value : string) => {
+            return _.findIndex(this.results, function(item : any) {
+                return item[key] == value;
+            });
         }
     }
 

@@ -32,6 +32,5 @@ module App.Repository {
         }
     }
 
-
     angularModule.service('MedicalRecord', MedicalRecord);
 }

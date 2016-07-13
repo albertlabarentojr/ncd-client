@@ -24,11 +24,11 @@ module App.Contracts.Base {
     export interface IRepository {
         recordName : string;
         getAll() : angular.IPromise<any[]>;
-        find(id : number) : restangular.IPromise<any[]>;
-        update(id : number, data : IRecordSet.IApiResponseElement) : restangular.IPromise<any[]>;
+        find(id : string, params : any) : restangular.IPromise<any[]>;
+        update(id : string, data : IRecordSet.IApiResponseElement) : restangular.IPromise<any[]>;
         insert(data : IRecordSet.IApiResponseElement) : restangular.IPromise<any[]>;
-        remove(id : number) : restangular.IPromise<any[]>;
-        findWith(id : number, relations : Array<IRelation>) : restangular.IElement;
+        remove(id : string) : restangular.IPromise<any[]>;
+        findWith(id : string, relations : Array<IRelation>) : restangular.IElement;
         hasResults() : Boolean;
     }
     

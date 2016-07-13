@@ -79,3 +79,7 @@ md-toolbar {
  .kiosk-search-content {
     width:  490px !important;
   }
+
+.user-panel {
+  max-height: 50px;
+}
