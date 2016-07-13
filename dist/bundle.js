@@ -588,6 +588,7 @@ var App;
                     _this.close();
                     _this.FormService.updateDataSet(_this.options.selectedItem);
                     _this.Notifications.notify('GLOBAL.SELECTED_INHABITANT');
+                    console.log(_this.continueState);
                     _this.continueCallback(_this.continueState);
                 };
                 this.gotoState = function (stateName) {
@@ -644,9 +645,16 @@ var App;
         }(BaseController));
         var InhabitantKioskController = (function (_super) {
             __extends(InhabitantKioskController, _super);
-            function InhabitantKioskController($scope, $rootScope, $mdSidenav, $state, FormService, Notifications) {
+            function InhabitantKioskController($scope, $rootScope, $mdSidenav, $state, FormService, Notifications, SearchInhabitantDialog, Inhabitant, MedicalRecord) {
                 var _this = this;
                 _super.call(this, $scope, $rootScope, $mdSidenav, $state);
+                this.$mdSidenav = $mdSidenav;
+                this.$state = $state;
+                this.FormService = FormService;
+                this.Notifications = Notifications;
+                this.SearchInhabitantDialog = SearchInhabitantDialog;
+                this.Inhabitant = Inhabitant;
+                this.MedicalRecord = MedicalRecord;
                 this.panelTitle = 'Inhabitant Kiosk';
                 this.navigateAsNewInhabitant = function (stateName) {
                     _this.FormService.resetDataSet();
@@ -656,10 +664,38 @@ var App;
                 this.navigateTo = function (stateName) {
                     _this.$state.go(stateName);
                 };
+                this.showSearchInhabitant = function (stateName) {
+                    var updateMedicalRecord = function (sn) {
+                        if (!_.has(_this.FormService.dataset, _this.Inhabitant.recordName)) {
+                            _this.Inhabitant.find(_this.FormService.dataset.inhabitant_id, [{ repository: _this.MedicalRecord }])
+                                .then(function (resp) {
+                                if (resp.length > 1) {
+                                    resp = resp[resp.length - 1];
+                                }
+                                else if (resp.length == 1) {
+                                    resp = resp[0];
+                                }
+                                else {
+                                    resp = {};
+                                }
+                                console.log(resp);
+                                _this.FormService.updateDataSet(resp);
+                                _this.$state.go(sn);
+                            });
+                        }
+                        else {
+                            _this.$state.go(sn);
+                        }
+                    };
+                    _this.SearchInhabitantDialog.show(stateName, updateMedicalRecord);
+                };
                 this.FormService = FormService;
                 this.Notifications = Notifications;
+                this.SearchInhabitantDialog = SearchInhabitantDialog;
+                this.Inhabitant = Inhabitant;
+                this.MedicalRecord = MedicalRecord;
             }
-            InhabitantKioskController.$inject = ['$scope', '$rootScope', '$mdSidenav', '$state', 'FormService', 'Notifications'];
+            InhabitantKioskController.$inject = ['$scope', '$rootScope', '$mdSidenav', '$state', 'FormService', 'Notifications', 'SearchInhabitantDialog', 'Inhabitant', 'MedicalRecord'];
             return InhabitantKioskController;
         }(Kiosk));
         var MedicalRecordKioskController = (function (_super) {
@@ -671,9 +707,19 @@ var App;
                 this.navigateToMedicalRecord = function (stateName) {
                     var updateMedicalRecord = function (sn) {
                         if (!_.has(_this.FormService.dataset, _this.Inhabitant.recordName)) {
-                            _this.Inhabitant.findPopulate(_this.FormService.dataset.inhabitant_id, _this.MedicalRecord)
+                            _this.MedicalRecord.getAll({ inhabitant_id: _this.FormService.dataset.inhabitant_id })
                                 .then(function (resp) {
-                                _this.FormService.updateDataSet(resp[_this.MedicalRecord.recordName]);
+                                if (resp.length > 1) {
+                                    resp = resp[resp.length - 1];
+                                }
+                                else if (resp.length == 1) {
+                                    resp = resp[0];
+                                }
+                                else {
+                                    resp = {};
+                                }
+                                console.log(resp);
+                                _this.FormService.updateDataSet(resp);
                                 _this.$state.go(sn);
                             });
                         }
@@ -2095,5 +2141,42 @@ var App;
             angularModule.directive('deleteConfirmDialog', DeleteConfirmDirective.factory());
         })(DeleteConfirm = Directives.DeleteConfirm || (Directives.DeleteConfirm = {}));
     })(Directives = App.Directives || (App.Directives = {}));
+})(App || (App = {}));
+var App;
+(function (App) {
+    var Services;
+    (function (Services) {
+        var SearchInhabitantDialog = (function () {
+            function SearchInhabitantDialog(AppConstants, KioskConstants, $mdDialog) {
+                var _this = this;
+                this.AppConstants = AppConstants;
+                this.KioskConstants = KioskConstants;
+                this.$mdDialog = $mdDialog;
+                this.dialog = {};
+                this.show = function (continueState, continueCallback) {
+                    if (continueCallback === void 0) { continueCallback = null; }
+                    _this.dialog.continueState = continueState;
+                    _this.dialog.continueCallback = continueCallback;
+                    _this.$mdDialog.show(_this.dialog);
+                };
+                this.AppConstants = AppConstants;
+                this.KioskConstants = KioskConstants;
+                this.$mdDialog = $mdDialog;
+                this.templateUrl = this.AppConstants.modulesTemplateUrl + '/' + this.KioskConstants.templateUrl;
+                this.dialog = {
+                    controller: 'SearchDialogController',
+                    controllerAs: 'ctrl',
+                    templateUrl: this.templateUrl + 'search_inhabitant_dialog.html',
+                    parent: angular.element(document.body),
+                    clickOutsideToClose: true,
+                    continueState: null,
+                    continueCallback: null
+                };
+            }
+            return SearchInhabitantDialog;
+        }());
+        Services.SearchInhabitantDialog = SearchInhabitantDialog;
+        angularModule.service('SearchInhabitantDialog', SearchInhabitantDialog);
+    })(Services = App.Services || (App.Services = {}));
 })(App || (App = {}));
 //# sourceMappingURL=bundle.js.map

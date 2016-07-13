@@ -13,6 +13,7 @@ module App.Controller {
     import FormService = App.Services.Forms.FormsService;
     import IConstants = App.Contracts.Constants;
     import IEventDispatcher = App.Base.IEventDispatcher;
+    import Services = App.Services;
 
     type searchOptions = {
         isDisabled : boolean,
@@ -86,6 +87,7 @@ module App.Controller {
             this.close();
             this.FormService.updateDataSet(this.options.selectedItem);
             this.Notifications.notify('GLOBAL.SELECTED_INHABITANT');
+            console.log(this.continueState);
             this.continueCallback(this.continueState);
         }
 
@@ -101,9 +103,9 @@ module App.Controller {
 
     class Kiosk extends BaseController {
 
-        $mdSidenav : any;
+        protected $mdSidenav : any;
 
-        $state : ng.ui.IStateService;
+        protected $state : ng.ui.IStateService;
 
         panelTitle : string;
 
@@ -133,18 +135,28 @@ module App.Controller {
     
     class InhabitantKioskController extends Kiosk {
         
-        static $inject : string[] = [ '$scope', '$rootScope', '$mdSidenav', '$state', 'FormService', 'Notifications' ];
+        static $inject : string[] = [ '$scope', '$rootScope', '$mdSidenav', '$state', 'FormService', 'Notifications', 'SearchInhabitantDialog', 'Inhabitant', 'MedicalRecord' ];
 
         panelTitle = 'Inhabitant Kiosk';
 
-        FormService : FormService;
+        constructor(
+            $scope : ng.IScope, 
+            $rootScope : ng.IRootScopeService, 
+            protected $mdSidenav : any, 
+            protected $state : ng.ui.IStateService, 
+            private FormService : FormService, 
+            private Notifications : IEventDispatcher,
+            private SearchInhabitantDialog : Services.SearchInhabitantDialog,
+            private Inhabitant : Repository.Inhabitant,
+            private MedicalRecord : Repository.MedicalRecord) {
 
-        Notifications : IEventDispatcher;
-
-        constructor($scope : ng.IScope, $rootScope : ng.IRootScopeService, $mdSidenav : any, $state : ng.ui.IStateService, FormService : FormService, Notifications : IEventDispatcher) {
             super($scope, $rootScope, $mdSidenav, $state);
+
             this.FormService = FormService;
             this.Notifications = Notifications;
+            this.SearchInhabitantDialog = SearchInhabitantDialog;
+            this.Inhabitant = Inhabitant;
+            this.MedicalRecord = MedicalRecord;
         }
 
         navigateAsNewInhabitant = (stateName : string) => {
@@ -155,6 +167,29 @@ module App.Controller {
 
         navigateTo = (stateName : string) => {
             this.$state.go(stateName);
+        }
+
+        showSearchInhabitant = (stateName : string) => {
+            let updateMedicalRecord = (sn : string) => {
+                if (!_.has(this.FormService.dataset, this.Inhabitant.recordName)) {
+                    this.Inhabitant.find(this.FormService.dataset.inhabitant_id, [{repository : this.MedicalRecord}])
+                    .then((resp : any) => {
+                         if(resp.length > 1) {
+                            resp = resp[resp.length - 1];
+                        } else if(resp.length == 1) {
+                            resp = resp[0];
+                        } else {
+                            resp = {};
+                        }
+                        console.log(resp);
+                        this.FormService.updateDataSet(resp);
+                        this.$state.go(sn);
+                    });
+                } else {
+                    this.$state.go(sn);
+                }
+            }
+            this.SearchInhabitantDialog.show( stateName,  updateMedicalRecord);
         }
     }
 
@@ -190,12 +225,20 @@ module App.Controller {
         }
 
         navigateToMedicalRecord = (stateName : string) => {
-            // has latest medical record
             let updateMedicalRecord = (sn : string) => {
+                // has latest medical record
                 if (!_.has(this.FormService.dataset, this.Inhabitant.recordName)) {
-                    this.Inhabitant.findPopulate(this.FormService.dataset.inhabitant_id, this.MedicalRecord)
+                    this.MedicalRecord.getAll({inhabitant_id : this.FormService.dataset.inhabitant_id})
                     .then((resp : any) => {
-                        this.FormService.updateDataSet(resp[this.MedicalRecord.recordName]);
+                        if(resp.length > 1) {
+                            resp = resp[resp.length - 1];
+                        } else if(resp.length == 1) {
+                            resp = resp[0];
+                        } else {
+                            resp = {};
+                        }
+                        console.log(resp);
+                        this.FormService.updateDataSet(resp);
                         this.$state.go(sn);
                     });
                 } else {

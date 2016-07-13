@@ -42,6 +42,7 @@
         "./src/directives/user_panel.directive.ts",
         "./src/directives/delete_confirm.directive.ts",
         "./src/repositories/Inhabitant.ts",
-        "./src/repositories/MedicalRecord.ts"
+        "./src/repositories/MedicalRecord.ts",
+        "./src/services/SearchInhabitantDialog.service.ts"
     ]
 }

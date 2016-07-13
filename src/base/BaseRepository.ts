@@ -49,7 +49,7 @@ module App.Base {
             return this.Restangular.one(this.recordName, id).get( param );
         }
 
-        findWith = (id : string, relations : Array<IRelation>) : restangular.IElement => {
+        findWith = (id : string, relations : Array<IRelation>) : restangular.IElement | restangular.IPromise<any[]>=> {
             let promise = this.Restangular.one(this.recordName, id);
 
             _.each(relations, (relation : IRelation) => {

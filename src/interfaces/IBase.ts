@@ -28,7 +28,7 @@ module App.Contracts.Base {
         update(id : string, data : IRecordSet.IApiResponseElement) : restangular.IPromise<any[]>;
         insert(data : IRecordSet.IApiResponseElement) : restangular.IPromise<any[]>;
         remove(id : string) : restangular.IPromise<any[]>;
-        findWith(id : string, relations : Array<IRelation>) : restangular.IElement;
+        findWith(id : string, relations : Array<IRelation>) : restangular.IElement | restangular.IPromise<any[]>;
         hasResults() : Boolean;
     }
     
