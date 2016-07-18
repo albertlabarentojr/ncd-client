@@ -1,5 +1,5 @@
 <div layout="column">
-    <md-list-item ng-click="medicalRecordCtrl.navigateToMedicalForms(medical_record)" ng-repeat="medical_record in medicalRecordCtrl.medical_records">
+    <md-list-item ng-click="medicalRecordCtrl.navigateToMedicalForms(medical_record)" ng-repeat="medical_record in medicalRecordCtrl.medical_records  | orderBy : 'createdAt':true">
         <p><b>Medical Record Since:</b> {{medical_record.createdAt | date:'fullDate'}}</p>
         <!--<md-checkbox class="md-secondary" ng-model="person.selected"></md-checkbox>-->
         <md-button aria-label="button-label" class="md-mini" ng-click="medicalRecordCtrl.navigateToMedicalForms(medical_record)">

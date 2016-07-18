@@ -1,5 +1,9 @@
 <div layout="column">
-    <md-list-item ng-click="inhabitantList.navigateToProfile(inhabitant)" ng-repeat="inhabitant in inhabitantList.inhabitants">
+    <md-input-container class="md-block inhabitant-list-searchbox">
+    <label>Enter Full / First / Last Name</label>
+    <input ng-model="searchByName" type="text">
+    </md-input-container>
+    <md-list-item ng-click="inhabitantList.navigateToProfile(inhabitant)" ng-repeat="inhabitant in inhabitantList.inhabitants | filter:searchByName">
         <p>{{inhabitant.last_name}}, {{ inhabitant.first_name }} {{ inhabitant.middle_name }}</p>
         <!--<md-checkbox class="md-secondary" ng-model="person.selected"></md-checkbox>-->
         <md-button aria-label="button-label" class="md-mini" ng-click="inhabitantList.navigateToProfile(inhabitant)">

@@ -68,14 +68,17 @@ module App.Controller.Inhabitant {
                     this.FormService.resetDataSet();
                     console.log(this.FormService.dataset);
                     this.FormService.updateDatasetWithPopulate(resp, this.Inhabitant);
+                    this.Notifications.notify('GLOBAL.SELECTED_INHABITANT');
                     console.log(this.FormService.dataset);
                     this.$state.go('kiosk.medical_record');
                 });
         }
 
         deleteMedicalRecord = ( medical_record : MedicalRecordResponse ) => {
-            this.MedicalRecord.remove(medical_record.medical_record_id)
-                .then(() => {
+            this.MedicalRecord.remove(medical_record.medical_record_id, { inhabitant_id : this.FormService.dataset.inhabitant_id })
+                .then((resp) => {
+                    console.log('Medical Record', resp, this.FormService.dataset);
+                    this.Notifications.notify('GLOBAL.DELETED_INHABITANT');
                     this.fetchInhabitantMedicalRecord();
                 });
         }

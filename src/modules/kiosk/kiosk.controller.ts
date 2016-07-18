@@ -225,7 +225,7 @@ module App.Controller {
         }
 
         navigateToMedicalRecord = (stateName : string) => {
-            let updateMedicalRecord = (sn : string) => {
+            let updateMedicalRecord = (sn : string, redirect : boolean = true) => {
                 // has latest medical record
                 if (!_.has(this.FormService.dataset, this.Inhabitant.recordName)) {
                     this.MedicalRecord.getAll({inhabitant_id : this.FormService.dataset.inhabitant_id})
@@ -242,6 +242,7 @@ module App.Controller {
                         this.$state.go(sn);
                     });
                 } else {
+                    console.log('holla', this.FormService.dataset);
                     this.$state.go(sn);
                 }
             }
@@ -280,8 +281,30 @@ module App.Controller {
             }
         }
     }
+
+    export class ReportKioskController extends Kiosk {
+
+        static $inject : string[] = ['$scope', '$rootScope', '$mdSidenav', '$state'];
+
+        panelTitle : string = 'Reports';
+
+        constructor(
+            $scope : ng.IScope,
+            $rootScope : ng.IRootScopeService,
+            protected $mdSidenav : any,
+            protected $state : ng.ui.IStateService
+        ) {
+            super($scope, $rootScope, $mdSidenav, $state);
+        }
+
+        navigateToReport = (stateName : string) => {
+            this.$state.go(stateName);
+        }
+
+    }
     
     angularKioskModule.controller('SearchDialogController', SearchDialog);
     angularKioskModule.controller('InhabitantKioskController', InhabitantKioskController);
     angularKioskModule.controller('MedicalRecordKioskController', MedicalRecordKioskController);
+    angularKioskModule.controller('ReportKioskController', ReportKioskController);
 }

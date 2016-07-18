@@ -6,7 +6,18 @@ module App.Config {
     export const Ng : App.Config.IAngular = {
         module : {
             name : 'ncd',
-            dependencies : ['restangular', 'ngMaterial', 'ngMdIcons', 'ui.router', 'ncd.kiosk', 'ncd.inhabitant', 'ncd.medical_record', 'ncd.user', 'notifications']
+            dependencies : [
+                'restangular', 
+                'ngMaterial', 
+                'ngMdIcons', 
+                'ui.router', 
+                'ncd.kiosk', 
+                'ncd.inhabitant', 
+                'ncd.medical_record', 
+                'ncd.user', 
+                'notifications', 
+                'ncd.report',
+                'mdDataTable']
         }
     }
     

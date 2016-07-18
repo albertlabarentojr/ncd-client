@@ -13,6 +13,12 @@
     },
     "jquery/jquery.d.ts": {
       "commit": "cb707bcfa3e99425a4a40f1a21c5e274b455e219"
+    },
+    "moment/moment-node.d.ts": {
+      "commit": "95eb7b2527a28281cdbf480c0560744bc5190465"
+    },
+    "moment/moment.d.ts": {
+      "commit": "95eb7b2527a28281cdbf480c0560744bc5190465"
     }
   }
 }

@@ -83,3 +83,18 @@ md-toolbar {
 .user-panel {
   max-height: 50px;
 }
+
+.kiosk-lists ng-md-icon{
+  height: 92% !important;
+  width: 40% !important;
+}
+.kiosk-lists md-grid-tile:hover {
+  cursor: pointer;
+}
+.kiosk-lists {  
+  margin: 10px;
+}
+
+.inhabitant-list-searchbox {
+  margin-bottom: 0px !important;
+}

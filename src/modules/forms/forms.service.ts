@@ -57,6 +57,15 @@ module App.Services.Forms {
             }
         }
 
+        reset = (formdata : any, formName : string, recordType : IRecordType) => {
+            _.forEach(formdata[formName], (value : any, key : string) => {
+               formdata[formName][key] = _.map(formdata[formName][key], (item : any) => {
+                   item.model = null;
+                   return item;
+               });
+            });
+        }
+
         private updatedInhabitant = (resp : any) => {
             this.updateDataSet(resp);
             console.log(this.dataset);
@@ -72,15 +81,12 @@ module App.Services.Forms {
                 let param : any = {};
                     param[MRRecName] = resp[MRId];
 
-                this.Inhabitant.updateCustom(this.dataset.inhabitant_id, param).then(function(r){
+                this.Inhabitant.updateCustom(this.dataset.inhabitant_id, param).then((r) => {
+                    this.Notifications.notify('GLOBAL.SELECTED_INHABITANT');
                 });
             }
             console.log(this.dataset);
             this.notify('Saved Medical Record');
-        }
-
-        fetch = () => {
-            return this.dataset;
         }
 
         updateDataSet = (toBeSaved : any) => {

@@ -36,6 +36,8 @@
         "./src/modules/forms/forms.service.ts",
         "./src/modules/user/user.ts",
         "./src/modules/user/user.controller.ts",
+        "./src/modules/report/report.ts",
+        "./src/modules/report/report.controller.ts",
         "./src/modules/module_name/module.main.ts",
         "./src/modules/module_name/module.controller.ts",
         "./src/directives/material_form.directive.ts",
@@ -43,6 +45,7 @@
         "./src/directives/delete_confirm.directive.ts",
         "./src/repositories/Inhabitant.ts",
         "./src/repositories/MedicalRecord.ts",
-        "./src/services/SearchInhabitantDialog.service.ts"
+        "./src/services/SearchInhabitantDialog.service.ts",
+        "./src/services/DataHelper.service.ts"
     ]
 }

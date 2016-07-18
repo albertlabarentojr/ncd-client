@@ -64,6 +64,19 @@ module App.Modules.Kiosk {
                 data : {
                     panelTitle : 'Medical Record Kiosk'
                 }
+            })
+            .state('kiosk.report', {
+                url : '/MedicalReport',
+                views : {
+                    'kiosk' : {
+                        templateUrl : templateUrl+'kiosk.report.html',
+                        controller : 'ReportKioskController',
+                        controllerAs : 'reportKioskCtrl'
+                    }
+                },
+                data : {
+                    panelTitle : 'Reports'
+                }
             });
     }
 

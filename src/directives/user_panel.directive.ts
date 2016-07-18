@@ -10,8 +10,6 @@
 /// <reference path="../base/Notification.ts" />
 /// <reference path="../base/EventDispatcher.ts" />
 
-
-
 module App.Directives.UserPanel {
 
     import IConstants = App.Contracts.Constants;
@@ -27,7 +25,7 @@ module App.Directives.UserPanel {
 
     class UserPanelController extends BaseController {
         
-        static $inject : string[] = ['$scope', '$rootScope', 'FormService', 'Notifications', '$state'];
+        static $inject : string[] = ['$scope', '$rootScope', 'FormService', 'Notifications', '$state', 'Inhabitant', 'MedicalRecord'];
 
 
         FormService : FormService;
@@ -45,18 +43,29 @@ module App.Directives.UserPanel {
             isHidden : true,
         };
 
-        constructor( $scope : IUserPanelScope, $rootScope : ng.IRootScopeService, FormService : FormService, Notifications : IEventDispatcher, $state : ng.ui.IStateService) {
+        constructor( $scope : IUserPanelScope, $rootScope : ng.IRootScopeService, FormService : FormService, Notifications : IEventDispatcher, $state : ng.ui.IStateService, private Inhabitant : Repository.Inhabitant, private MedicalRecord : Repository.MedicalRecord) {
             super($scope, $rootScope);
             this.FormService = FormService;
             this.Notifications = Notifications;
             this.$state = $state;
+            this.Inhabitant = Inhabitant;
+            this.MedicalRecord = MedicalRecord;
             this.defineListeners();
-            this.showActiveInhabitant();
+            this.onload();
+        }
+
+        onload  = () => {
+            // if panel is visible
+            console.log(this.upanelData.isHidden && this.FormService.hasInhabitant());
+            if ( this.upanelData.isHidden && this.FormService.hasInhabitant() ) {
+                this.showActiveInhabitant();
+            } 
         }
 
         defineListeners = () => {
             this.Notifications.addEventListener('GLOBAL.SELECTED_INHABITANT', this.showActiveInhabitant.bind(this));
             this.Notifications.addEventListener('GLOBAL.RESET_SELECTED_INHABITANT', this.close.bind(this));
+            this.Notifications.addEventListener('GLOBAL.DELETED_INHABITANT', this.updateToLatestMedicalRecord.bind(this));
         }
 
         showActiveInhabitant = () => {
@@ -72,6 +81,16 @@ module App.Directives.UserPanel {
                 this.upanelData.showEditInhabitantBtn = false;
             }
         }   
+
+        updateToLatestMedicalRecord = () => {
+            console.log('Delete');
+              this.Inhabitant.find(this.FormService.dataset.inhabitant_id)
+                .then((resp : any) => {
+                    console.log(resp);
+                    this.FormService.resetDataSet();
+                    this.FormService.updateDataSet(resp);
+                });
+        }
 
         showMedicalRecord = () => {
             // show medical record primary info
@@ -99,7 +118,6 @@ module App.Directives.UserPanel {
             this.$state.go('kiosk.medical_record');
             console.log(this.FormService.dataset);
         }
-        
     }
 
     angularModule.controller('UserPanelController', UserPanelController);

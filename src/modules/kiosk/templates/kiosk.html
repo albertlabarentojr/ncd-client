@@ -12,12 +12,18 @@
                 Inhabitants
             </md-tooltip> 
         </md-button>
-        <md-button aria-label="Statistics" type="button" class="md-fab md-mini md-button md-ink-ripple md-raised" md-colors="{background : 'blue'}">
+        <md-button ui-sref="kiosk.report" aria-label="Reports" type="button" class="md-fab md-mini md-button md-ink-ripple md-raised" md-colors="{background : 'blue'}">
+            <ng-md-icon icon="storage" style="color : white"></ng-md-icon>
+            <md-tooltip md-direction="right">
+                Reports
+            </md-tooltip> 
+        </md-button>
+        <!--<md-button aria-label="Statistics" type="button" class="md-fab md-mini md-button md-ink-ripple md-raised" md-colors="{background : 'blue'}">
             <ng-md-icon icon="show_chart" style="color : white"></ng-md-icon> 
             <md-tooltip md-direction="right">
                 Statistics
             </md-tooltip> 
-        </md-button>
+        </md-button>-->
     </div>
     <div flex md-whiteframe="1">
         <div ui-view="kiosk"></div>

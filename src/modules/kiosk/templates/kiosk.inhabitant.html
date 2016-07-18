@@ -23,18 +23,46 @@
 
     <div>
         <div ui-view="inhabitant">
-            <md-button ng-click="inhabitantController.navigateAsNewInhabitant('kiosk.inhabitant.register')" class="md-cornered md-button md-ink-ripple md-raised" type="button" md-colors="{ background : 'blue-700'}">
-                Register Inhabitant
-            </md-button>
-            <md-button ng-click="inhabitantController.navigateTo('kiosk.inhabitant.list')" class="md-cornered md-button md-ink-ripple md-raised" type="button" md-colors="{ background : 'blue-700'}">
-                Search Inhabitant
-            </md-button>
-            <md-button ng-click="inhabitantController.showSearchInhabitant('kiosk.inhabitant.register')" class="md-cornered md-button md-ink-ripple md-raised" type="button" md-colors="{ background : 'blue-700'}">
-                Update Inhabitant
-            </md-button>
-            <md-button ng-click="inhabitantController.navigateTo('kiosk.inhabitant.list')" class="md-cornered md-button md-ink-ripple md-raised" type="button" md-colors="{ background : 'blue-700'}">
-                Show Inhabitants
-            </md-button>
+            <md-grid-list 
+                md-cols-xs="1" md-cols-sm="1" md-cols-md="1" md-cols-gt-md="6"
+                md-row-height-gt-md="9:5" md-row-height="4:4"
+                md-gutter="12px" md-gutter-gt-sm="8px" class="kiosk-lists">
+                <md-grid-tile md-colors="{background : 'red-A200'}"
+                    md-rowspan="1" md-colspan="1" md-colspan-sm="1" md-colspan-xs="1" 
+                    ng-click="inhabitantController.navigateAsNewInhabitant('kiosk.inhabitant.register')">
+                <ng-md-icon icon="person" size="100" style="fill:white"></ng-md-icon>
+                <md-grid-tile-footer>
+                    <h3>Register Inhabitant</h3>
+                </md-grid-tile-footer>
+                </md-grid-tile>
+
+                <md-grid-tile md-colors="{background : 'blue-A200'}"
+                    md-rowspan="1" md-colspan="1" md-colspan-sm="1" md-colspan-xs="1"
+                    ng-click="inhabitantController.navigateTo('kiosk.inhabitant.list')">
+                <ng-md-icon icon="search" size="100" style="fill:white"></ng-md-icon>
+                <md-grid-tile-footer>
+                    <h3>Search Inhabitant</h3>
+                </md-grid-tile-footer>
+                </md-grid-tile>
+
+                <md-grid-tile md-colors="{background : 'red-A200'}"
+                    md-rowspan="1" md-colspan="1" md-colspan-sm="1" md-colspan-xs="1"
+                    ng-click="inhabitantController.showSearchInhabitant('kiosk.inhabitant.register')">
+                <ng-md-icon icon="edit" size="100" style="fill:white"></ng-md-icon>
+                <md-grid-tile-footer>
+                    <h3>Update Inhabitant</h3>
+                </md-grid-tile-footer>
+                </md-grid-tile>
+
+                <md-grid-tile md-colors="{background : 'light-blue-A200'}"
+                    md-rowspan="1" md-colspan="1" md-colspan-sm="1" md-colspan-xs="1"
+                    ng-click="inhabitantController.navigateTo('kiosk.inhabitant.list')">
+                <ng-md-icon icon="list" size="100" style="fill:white"></ng-md-icon>
+                <md-grid-tile-footer>
+                    <h3>List of Inhabitants</h3>
+                </md-grid-tile-footer>
+                </md-grid-tile>
+            </md-grid-list>
         </div>
     </div>
 

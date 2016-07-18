@@ -38,7 +38,10 @@ module App.Services.Inhabitant {
         }
 
         deleteInhabitant = (inhabitant_id : string) => {
-           return  this.Inhabitant.remove(inhabitant_id);
+           return  this.Inhabitant.remove(inhabitant_id)
+            .then(() => {
+                return this.MedicalRecord.removeColletion( { inhabitant_id : inhabitant_id } );
+            });
         }
 
     }

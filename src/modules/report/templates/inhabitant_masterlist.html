@@ -1,0 +1,14 @@
+<mdt-table paginated-rows="{isEnabled: true, rowsPerPageValues: [5,10,20,100]}">
+    <mdt-header-row>
+      <mdt-column align-rule="left">Last Name</mdt-column>
+      <mdt-column align-rule="right">First Name</mdt-column>
+      <mdt-column align-rule="right">Middle Name</mdt-column>
+      <mdt-column align-rule="right">Gender</mdt-column>
+    </mdt-header-row>
+    <mdt-row ng-repeat="inhabitant in reportCtrl.inhabitants">
+      <mdt-cell>{{inhabitant.last_name}}</mdt-cell>
+      <mdt-cell>{{inhabitant.first_name}}</mdt-cell>
+      <mdt-cell>{{inhabitant.middle_name}}</mdt-cell>
+      <mdt-cell>{{inhabitant.gender}}</mdt-cell>
+    </mdt-row>
+  </mdt-table>

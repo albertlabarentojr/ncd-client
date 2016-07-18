@@ -21,10 +21,14 @@
         </fieldset>
         <div layout="row">
             <div flex></div>
+            <md-button aria-label="save" class="md-mini md-raised " ng-click="formController.reset('medical_history', 'medical_record')">
+                <ng-md-icon icon="refresh"></ng-md-icon>
+                reset
+           </md-button>
            <md-button aria-label="save" class="md-mini md-raised " ng-click="formController.submitModel('medical_history', 'medical_record')">
                 <ng-md-icon icon="save"></ng-md-icon>
                 save
-            </md-button>
+           </md-button>
         </div>
     </md-content>
 </div>

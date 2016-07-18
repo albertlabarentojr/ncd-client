@@ -3,16 +3,6 @@
         <div class="md-toolbar-tools" md-colors="{background : 'teal-600'}">
             <h3>{{ panelTitle }}</h3>
             <span flex></span>
-            <!--<md-button aria-label="save" class="md-mini  ">
-                <ng-md-icon icon="save"></ng-md-icon>
-                save
-            </md-button>
-            <md-button class="md-icon-button md-button md-ink-ripple" type="button" ng-click="inhabitantController.toggleRight('right')">
-              <ng-md-icon icon="menu"></ng-md-icon>
-              <md-tooltip md-direction="left">
-                Tools
-              </md-tooltip> 
-          </md-button>-->
         </div>
     </md-toolbar>
 
@@ -21,27 +11,36 @@
     <!--End User Panel Directive-->
 
     <div>
-        <div ui-view="medical_record">
+        <div ui-view="report">
             <md-grid-list 
                 md-cols-xs="1" md-cols-sm="1" md-cols-md="1" md-cols-gt-md="6"
                 md-row-height-gt-md="9:5" md-row-height="4:4"
                 md-gutter="12px" md-gutter-gt-sm="8px" class="kiosk-lists">
 
-                <md-grid-tile md-colors="{background : 'indigo-A200'}"
+                <md-grid-tile md-colors="{background : 'teal-600'}"
                     md-rowspan="1" md-colspan="1" md-colspan-sm="1" md-colspan-xs="1"
-                    ng-click="medicalRecordController.navigateToMedicalRecord('kiosk.medical_record.ncdraf')">
-                <ng-md-icon icon="chrome_reader_mode" size="100" style="fill:white"></ng-md-icon>
+                    ng-click="reportKioskCtrl.navigateToReport('kiosk.report.inhabitants_masterlist')">
+                <ng-md-icon icon="storage" size="100" style="fill:white"></ng-md-icon>
                 <md-grid-tile-footer>
-                    <h3>Non-Communicable Disease Risk Assessment Form</h3>
+                    <h3>Inhabitants Masterlist</h3>
                 </md-grid-tile-footer>
                 </md-grid-tile>
 
-                 <md-grid-tile md-colors="{background : 'indigo-A200'}"
+                <md-grid-tile md-colors="{background : 'teal-600'}"
                     md-rowspan="1" md-colspan="1" md-colspan-sm="1" md-colspan-xs="1"
-                    ng-click="medicalRecordController.navigateToMedicalRecord('kiosk.medical_record.stop_smoking_program')">
-                <ng-md-icon icon="chrome_reader_mode" size="100" style="fill:white"></ng-md-icon>
+                    ng-click="reportKioskCtrl.navigateToReport('kiosk.report.pen_summary')">
+                <ng-md-icon icon="storage" size="100" style="fill:white"></ng-md-icon>
                 <md-grid-tile-footer>
-                    <h3>Stop Smoking Program</h3>
+                    <h3>Summary Report of PEN Implementation</h3>
+                </md-grid-tile-footer>
+                </md-grid-tile>
+
+                 <md-grid-tile md-colors="{background : 'teal-600'}"
+                    md-rowspan="1" md-colspan="1" md-colspan-sm="1" md-colspan-xs="1"
+                    ng-click="reportKioskCtrl.navigateToReport('kiosk.report.pen_tcam')">
+                <ng-md-icon icon="storage" size="100" style="fill:white"></ng-md-icon>
+                <md-grid-tile-footer>
+                    <h3>PEN Target Client Assessment Masterlist</h3>
                 </md-grid-tile-footer>
                 </md-grid-tile>
             </md-grid-list>

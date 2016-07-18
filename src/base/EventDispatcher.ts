@@ -10,7 +10,7 @@ module App.Base {
     
     export class EventDispatcher implements IEventDispatcher{
         
-        private listeners : Object = {};
+        private listeners : any = {};
         
         addEventListener = (type : string, listener : () => void) : Object => {
             if(!this.isEventExists(type))
@@ -28,19 +28,19 @@ module App.Base {
         }
         
         notify  : any = function(eventName : string) : void {
-            var listeners;
+            let lst : any;
                 
             if(typeof arguments[0] !== 'string'){
                 console.warn('EventDispatcher','First params must be an event type (String)')
             }else{
-                listeners = this.listeners[arguments[0]];
+                lst = this.listeners[arguments[0]];
 
-                for(var key in listeners){
+                for(var key in lst){
                     //This could use .apply(arguments) instead, but there is currently a bug with it.
                     // listeners[key](arguments[0],arguments[1],arguments[2],arguments[3],arguments[4],arguments[5],arguments[6]);
                     
                     //refractored loop
-                    listeners[key].apply(this, arguments);
+                    lst[key].apply(this, arguments);
                 }
             }
         } 

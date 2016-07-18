@@ -47,6 +47,10 @@ module App.Modules.Forms {
             this.FormService.save(this.forms, formName, recordType);
         }
 
+        reset = (formName : string, recordType : IRecordType) => {
+            this.FormService.reset(this.forms, formName, recordType);
+        }
+
         risk_factors_rows : any = {
             nutrisyon  : [
                 {startAt : 0, endAt : 3},

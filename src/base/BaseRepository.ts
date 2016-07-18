@@ -83,8 +83,12 @@ module App.Base {
                 return this.insert(data);
         }
         
-        remove = (id : string) : restangular.IPromise<any> => {
-            return this.Restangular.one(this.recordName, id).remove();
+        remove = (id : string, params : any = {}) : restangular.IPromise<any> => {
+            return this.Restangular.one(this.recordName, id).remove(params);
+        }
+        
+        removeColletion = (queryParams : any) : restangular.IPromise<any> => {
+            return this.Restangular.one(this.recordName).remove(queryParams);
         }
         
         cache = (params : any = {}) : angular.IPromise<any> => {

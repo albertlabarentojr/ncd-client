@@ -14,6 +14,14 @@
 
     <!--Medical Record Toolbars-->
     <div ng-show="presentKiosk == 'medical_record'">
+        <!-- With Existing Medical Record Selected -->
+        <span class="md-subhead" ng-if="ctrl.upanelData.inhabitant.medical_records && !ctrl.upanelData.inhabitant.medical_record_id"><b>Medical Record No:</b> {{ ctrl.upanelData.inhabitant.medical_records }}</span>
+        <span class="md-subhead" ng-if="ctrl.upanelData.inhabitant.medical_record_id"><b>Medical Record No:</b> {{ ctrl.upanelData.inhabitant.medical_record_id }}</span>
+        <!-- With New Medical Record -->
+        <span class="md-subhead" ng-if="!ctrl.upanelData.inhabitant.medical_records && !ctrl.upanelData.inhabitant.medical_record_id" md-colors="{ color : 'red-400' }">
+            <ng-md-icon icon="warning"></ng-md-icon>
+            Please Select Form to Add New Medical Record
+        </span>
         <md-button class="md-icon-button" aria-label="add" ng-click="ctrl.addMedicalRecord()">
             <ng-md-icon icon="add"></ng-md-icon>
             <md-tooltip md-direction="bottom">
