@@ -35,6 +35,10 @@ module App.Services.Forms {
 
         save = (formdata : any, formName : string, recordType : IRecordType) => {
            let toBeSaved = this.questionToParams(formdata, formName);
+           let toBeSavedMedicalDates = this.questionToParams(formdata, 'medical_dates');
+               
+               toBeSaved = _.extend(toBeSaved, toBeSavedMedicalDates);
+               console.log(toBeSaved);
 
            let fieldNames : string[] = _.map(_.flatMap(formdata[formName]), (field : any) => {
                 return field.choice_name;
@@ -53,6 +57,7 @@ module App.Services.Forms {
                 return this.Inhabitant.save(this.dataset).then(this.updatedInhabitant.bind(this));
             } else if(recordType == 'medical_record')  {
                 this.dataset.inhabitants = this.dataset.inhabitant_id; // populate id
+                console.log(this.dataset);
                 return this.MedicalRecord.save(this.dataset).then(this.updatedMedicalRecord.bind(this));
             }
         }

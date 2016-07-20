@@ -1,5 +1,10 @@
 <div class="md-inline-form" layout="column"  md-theme="docs-dark" ng-controller="FormsController as formController">
     <md-content layout-padding layout-margin >
+        
+        <!--Medical Dates Fragment-->
+        <ng-include src="formController.includeMedicalDatesTemplate"></ng-include>
+        <!--End Medical Dates Fragment-->
+
         <fieldset class="standard">
             <legend>Smoking History</legend>
             <material-row 

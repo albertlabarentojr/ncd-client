@@ -1,7 +1,12 @@
 <div class="md-inline-form" layout="column"  md-theme="docs-dark" ng-controller="FormsController as formController">
     <md-content layout-padding layout-margin >
         <div>
-            <span class="md-title">I. Non-modifiable Risk Factors</span>
+
+            <!--Medical Dates Fragment-->
+            <ng-include src="formController.includeMedicalDatesTemplate"></ng-include>
+            <!--End Medical Dates Fragment-->
+
+            <h1 class="md-title">I. Non-modifiable Risk Factors</h1>
             <div layout-gt-sm="row">
                 <md-input-container class="md-block" >
                    <label>Sakit sa pamilya</label>

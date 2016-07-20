@@ -21,7 +21,8 @@ var App;
                     'ncd.user',
                     'notifications',
                     'ncd.report',
-                    'mdDataTable']
+                    'mdDataTable',
+                    'angularMoment']
             }
         };
         Config.Variables = {
@@ -100,6 +101,8 @@ var App;
 namespace('GLOBAL').SELECTED_USER = 'GLOBAL.SELECTED_INHABITANT';
 namespace('GLOBAL').RESET_SELECTED_USER = 'GLOBAL.RESET_SELECTED_INHABITANT';
 namespace('GLOBAL').RESET_SELECTED_USER = 'GLOBAL.DELETE_INHABITANT';
+namespace('GLOBAL.EXPORT').PDF = 'GLOBAL.EXPORT.PDF';
+namespace('GLOBAL.EXPORT').EXCEL = 'GLOBAL.EXPORT.EXCEL';
 var App;
 (function (App) {
     var Base;
@@ -463,6 +466,9 @@ var App;
                     this.dataset = {};
                     this.save = function (formdata, formName, recordType) {
                         var toBeSaved = _this.questionToParams(formdata, formName);
+                        var toBeSavedMedicalDates = _this.questionToParams(formdata, 'medical_dates');
+                        toBeSaved = _.extend(toBeSaved, toBeSavedMedicalDates);
+                        console.log(toBeSaved);
                         var fieldNames = _.map(_.flatMap(formdata[formName]), function (field) {
                             return field.choice_name;
                         });
@@ -477,6 +483,7 @@ var App;
                         }
                         else if (recordType == 'medical_record') {
                             _this.dataset.inhabitants = _this.dataset.inhabitant_id;
+                            console.log(_this.dataset);
                             return _this.MedicalRecord.save(_this.dataset).then(_this.updatedMedicalRecord.bind(_this));
                         }
                     };
@@ -739,6 +746,7 @@ var App;
                 var _this = this;
                 _super.call(this, $scope, $rootScope, $mdSidenav, $state);
                 this.panelTitle = 'Medical Record Kiosk';
+                this.datesCollections = ['ncdradf_date_assessed', 'ncdradf_date_followup', 'stop_smoking_program_date_assessed', 'stop_smoking_program_date_followup'];
                 this.navigateToMedicalRecord = function (stateName) {
                     var updateMedicalRecord = function (sn, redirect) {
                         if (redirect === void 0) { redirect = true; }
@@ -754,6 +762,12 @@ var App;
                                 else {
                                     resp = {};
                                 }
+                                _.forEach(_this.datesCollections, function (item) {
+                                    console.log(_.indexOf(_.keys(resp), item));
+                                    if (_.indexOf(_.keys(resp), item)) {
+                                        resp[item] = new Date(resp[item]);
+                                    }
+                                });
                                 console.log(resp);
                                 _this.FormService.updateDataSet(resp);
                                 _this.$state.go(sn);
@@ -961,8 +975,9 @@ var App;
             var InhabitantService = (function () {
                 function InhabitantService(Inhabitant, MedicalRecord, $mdToast, FormService) {
                     var _this = this;
-                    this.getInhabitants = function () {
-                        return _this.Inhabitant.getAll();
+                    this.getInhabitants = function (params) {
+                        if (params === void 0) { params = {}; }
+                        return _this.Inhabitant.getAll(params);
                     };
                     this.updateInhabitant = function (inhabitant) {
                         _this.FormService.updateDataSet(inhabitant);
@@ -1122,18 +1137,25 @@ var App;
             var BaseController = App.Base.BaseController;
             var FormsController = (function (_super) {
                 __extends(FormsController, _super);
-                function FormsController($scope, $rootScope, AppConstants, FormService) {
+                function FormsController($scope, $rootScope, AppConstants, FormService, $state) {
                     var _this = this;
                     _super.call(this, $scope, $rootScope);
+                    this.$state = $state;
                     this.forms = {
                         risk_factors: {}
                     };
                     this.templateUrl = 'forms/templates/';
+                    this.includeMedicalDatesTemplate = 'include_medical_dates.html';
                     this.submitModel = function (formName, recordType) {
                         _this.FormService.save(_this.forms, formName, recordType);
                     };
                     this.reset = function (formName, recordType) {
                         _this.FormService.reset(_this.forms, formName, recordType);
+                    };
+                    this.medical_dates_rows = {
+                        basic: [
+                            { startAt: 0, endAt: 2 }
+                        ]
                     };
                     this.risk_factors_rows = {
                         nutrisyon: [
@@ -1206,6 +1228,44 @@ var App;
                         _this.$scope['searchKeyDown'] = function (ev) {
                             ev.stopPropagation();
                         };
+                    };
+                    this.medicalDates = function () {
+                        var medical_dates = {};
+                        var basic = [
+                            {
+                                question_name: 'Date Assessed for NCDRAF Form',
+                                type: 'date',
+                                choice_name: 'ncdradf_date_assessed',
+                                model: null
+                            },
+                            {
+                                question_name: 'Date of next follow-up',
+                                type: 'date',
+                                choice_name: 'ncdradf_date_followup',
+                                model: null
+                            },
+                            {
+                                question_name: 'Date Assessed for Stop Smoking Program Form',
+                                type: 'date',
+                                choice_name: 'stop_smoking_program_date_assessed',
+                                model: null
+                            },
+                            {
+                                question_name: 'Date of next follow-up',
+                                type: 'date',
+                                choice_name: 'stop_smoking_program_date_followup',
+                                model: null
+                            }
+                        ];
+                        medical_dates.basic = basic;
+                        _this.forms.medical_dates = medical_dates;
+                        var stateName = _this.$state.current.name;
+                        if (stateName == 'kiosk.medical_record.stop_smoking_program') {
+                            _this.medical_dates_rows.basic[0] = { startAt: 2, endAt: 2 };
+                        }
+                        else if (stateName == 'kiosk.medical_record.ncdraf') {
+                            _this.medical_dates_rows[0] = { startAt: 0, endAt: 2 };
+                        }
                     };
                     this.personalProfile = function () {
                         var personal_profile = {};
@@ -1915,13 +1975,15 @@ var App;
                     this.AppConstants = AppConstants;
                     this.FormService = FormService;
                     this.defineScope();
+                    this.medicalDates();
                     this.riskFactors();
                     this.medicalHistroy();
                     this.personalProfile();
                     this.smoking();
                     this.templateUrl = this.AppConstants.modulesTemplateUrl + this.templateUrl;
+                    this.includeMedicalDatesTemplate = this.templateUrl + this.includeMedicalDatesTemplate;
                 }
-                FormsController.$inject = ['$scope', '$rootScope', 'AppConstants', 'FormService'];
+                FormsController.$inject = ['$scope', '$rootScope', 'AppConstants', 'FormService', '$state'];
                 return FormsController;
             }(BaseController));
             angularModule.controller('FormsController', FormsController);
@@ -2065,20 +2127,29 @@ var App;
             var BaseController = App.Base.BaseController;
             var ReportController = (function (_super) {
                 __extends(ReportController, _super);
-                function ReportController($scope, $rootScope, InhabitantService) {
+                function ReportController($scope, $rootScope, InhabitantService, Notifications) {
                     var _this = this;
                     _super.call(this, $scope, $rootScope);
+                    this.$scope = $scope;
                     this.InhabitantService = InhabitantService;
+                    this.Notifications = Notifications;
                     this.inhabitants = [];
+                    this.defineScope = function () {
+                        _this.$scope.currentDate = moment(new Date());
+                    };
                     this.fetchInhabitants = function () {
-                        _this.InhabitantService.getInhabitants().then(_this.updateInhabitants.bind(_this));
+                        _this.InhabitantService.getInhabitants({ populate: 'medical_records' }).then(_this.updateInhabitants.bind(_this));
                     };
                     this.updateInhabitants = function (resp) {
                         _this.inhabitants = resp;
                     };
+                    this.export = function () {
+                        _this.Notifications.notify('GLOBAL.EVENTS.EXPORT.EXCEL');
+                    };
                     this.fetchInhabitants();
+                    this.defineScope();
                 }
-                ReportController.$inject = ['$scope', '$rootScope', 'InhabitantService'];
+                ReportController.$inject = ['$scope', '$rootScope', 'InhabitantService', 'Notifications'];
                 return ReportController;
             }(BaseController));
             reportModule.controller('ReportController', ReportController);
@@ -2319,6 +2390,38 @@ var App;
 })(App || (App = {}));
 var App;
 (function (App) {
+    var Directive;
+    (function (Directive) {
+        var ExportTable;
+        (function (ExportTable) {
+            var ExportTableDirective = (function () {
+                function ExportTableDirective(AppConstants, Notifications) {
+                    var _this = this;
+                    this.AppConstants = AppConstants;
+                    this.Notifications = Notifications;
+                    this.restrict = 'C';
+                    this.link = function (scope, elem, attrs) {
+                        _this.Notifications.addEventListener('GLOBAL.EVENTS.EXPORT.EXCEL', _this.exportExcel.bind(_this, elem));
+                    };
+                    this.exportExcel = function (elem) {
+                        elem.tableExport({ type: 'excel', escape: 'false' });
+                    };
+                    this.AppConstants = AppConstants;
+                    this.Notifications = Notifications;
+                }
+                ExportTableDirective.factory = function () {
+                    var directive = function (AppConstants, Notifications) { return new ExportTableDirective(AppConstants, Notifications); };
+                    directive.$inject = ['AppConstants', 'Notifications'];
+                    return directive;
+                };
+                return ExportTableDirective;
+            }());
+            angularModule.directive('exportTable', ExportTableDirective.factory());
+        })(ExportTable = Directive.ExportTable || (Directive.ExportTable = {}));
+    })(Directive = App.Directive || (App.Directive = {}));
+})(App || (App = {}));
+var App;
+(function (App) {
     var Services;
     (function (Services) {
         var SearchInhabitantDialog = (function () {
@@ -2362,9 +2465,6 @@ var App;
             function DataHelper(data) {
                 this.data = data;
                 this.parseDates = function (dateKeys) {
-                };
-                this.getAge = function (birthdate) {
-                    moment(birthdate).diff(moment(), 'year');
                 };
                 this.data = data;
             }

@@ -29,8 +29,8 @@ module App.Services.Inhabitant {
             this.FormService = FormService;
         }
         
-        getInhabitants = () => {
-            return this.Inhabitant.getAll();
+        getInhabitants = (params : any = {}) => {
+            return this.Inhabitant.getAll(params);
         }
 
         updateInhabitant = (inhabitant : InhabitantElement) => {

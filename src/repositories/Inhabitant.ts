@@ -16,7 +16,7 @@ module App.Repository {
     import BaseRepository = App.Base.BaseRepository;
 
     export interface InhabitantResponse extends IResponse.IApiResponseElement, IForms.IPersonalProfile {
-        medical_records? : Array<IMedicalRecordResponse>;
+        medical_records? : string;
     }
 
     export interface InhabitantRequest extends IRequest.ApiRequestElement, IForms.IPersonalProfile, IForms.IMedicalHistory, IForms.IRiskFactors, IForms.ISmoking{

@@ -19,7 +19,7 @@ module App.Modules.Forms {
 
     class FormsController extends BaseController {
 
-        static $inject : string[] = ['$scope', '$rootScope', 'AppConstants', 'FormService'];
+        static $inject : string[] = ['$scope', '$rootScope', 'AppConstants', 'FormService', '$state'];
 
         forms : any = {
             risk_factors : {}
@@ -27,20 +27,24 @@ module App.Modules.Forms {
 
         templateUrl : string = 'forms/templates/';
 
+        includeMedicalDatesTemplate : string = 'include_medical_dates.html';
+
         AppConstants : IContants.AppConstants;
 
         FormService : IFormService;
 
-        constructor($scope : ng.IScope, $rootScope : ng.IRootScopeService, AppConstants : IContants.AppConstants, FormService : IFormService){
+        constructor($scope : ng.IScope, $rootScope : ng.IRootScopeService, AppConstants : IContants.AppConstants, FormService : IFormService, private $state : ng.ui.IStateService){
             super($scope, $rootScope);
             this.AppConstants = AppConstants;
             this.FormService = FormService;
             this.defineScope();
+            this.medicalDates();
             this.riskFactors();
             this.medicalHistroy();
             this.personalProfile();
             this.smoking();
             this.templateUrl = this.AppConstants.modulesTemplateUrl+this.templateUrl;
+            this.includeMedicalDatesTemplate = this.templateUrl+this.includeMedicalDatesTemplate; 
         }
 
         submitModel = (formName : string, recordType : IRecordType) => {
@@ -50,6 +54,12 @@ module App.Modules.Forms {
         reset = (formName : string, recordType : IRecordType) => {
             this.FormService.reset(this.forms, formName, recordType);
         }
+
+        medical_dates_rows : any = {
+            basic : [
+                {startAt : 0, endAt : 2}
+            ]
+        };
 
         risk_factors_rows : any = {
             nutrisyon  : [
@@ -127,6 +137,49 @@ module App.Modules.Forms {
                 ev.stopPropagation();
             }
         }
+
+        medicalDates = () => {
+            let medical_dates : any = {};
+
+            let basic : Array<MaterialForm.IQuestion> = [
+                {
+                    question_name : 'Date Assessed for NCDRAF Form',
+                    type : 'date',
+                    choice_name : 'ncdradf_date_assessed',
+                    model : null
+                },
+                {
+                    question_name : 'Date of next follow-up',
+                    type : 'date',
+                    choice_name : 'ncdradf_date_followup',
+                    model : null
+                },
+                {
+                    question_name : 'Date Assessed for Stop Smoking Program Form',
+                    type : 'date',
+                    choice_name : 'stop_smoking_program_date_assessed',
+                    model : null
+                },
+                {
+                    question_name : 'Date of next follow-up',
+                    type : 'date',
+                    choice_name : 'stop_smoking_program_date_followup',
+                    model : null
+                }
+            ];
+
+            medical_dates.basic = basic;
+
+            this.forms.medical_dates = medical_dates;
+
+            //modify rows based on selected form
+            let stateName = this.$state.current.name;
+            if( stateName == 'kiosk.medical_record.stop_smoking_program' ) {
+                this.medical_dates_rows.basic[0] = {startAt : 2, endAt : 2};
+            } else if( stateName == 'kiosk.medical_record.ncdraf' ) {
+                this.medical_dates_rows[0] = {startAt : 0, endAt : 2};
+            }
+        };
 
         personalProfile = () => {
             let personal_profile : any = {};

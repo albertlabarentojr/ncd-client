@@ -1,1 +1,37 @@
-<h1>PEN TCAM</h1>
+<md-button class="md-raised md-primary" ng-click="reportCtrl.export()">Export to Excel</md-button>
+<mdt-table paginated-rows="{isEnabled: true, rowsPerPageValues: [5,10,20,100]}" class="export-table">
+    <mdt-header-row>
+      <mdt-column align-rule="left">ID No.</mdt-column>
+      <mdt-column align-rule="right">Date Assessed</mdt-column>
+      <mdt-column align-rule="right">Name</mdt-column>
+      <mdt-column align-rule="right">Age</mdt-column>
+      <mdt-column align-rule="right">Gender</mdt-column>
+      <mdt-column align-rule="right">Contact No.</mdt-column>
+      <mdt-column align-rule="right">HPN</mdt-column>
+      <mdt-column align-rule="right">DM</mdt-column>
+      <mdt-column align-rule="right">CVD</mdt-column>
+      <mdt-column align-rule="right">COPD</mdt-column>
+      <mdt-column align-rule="right">ASTHMA</mdt-column>
+      <mdt-column align-rule="right">Cancer</mdt-column>
+      <mdt-column align-rule="right">Disability</mdt-column>
+      <mdt-column align-rule="right">Risk Prediction</mdt-column>
+      <mdt-column align-rule="right">Date of Next Follow Up</mdt-column>
+    </mdt-header-row>
+    <mdt-row ng-repeat="inhabitant in reportCtrl.inhabitants">
+      <mdt-cell>{{inhabitant.last_name}}</mdt-cell>
+      <mdt-cell>{{inhabitant.medical_records.ncdradf_date_assessed | amDateFormat:'MMM DD YYYY'}}</mdt-cell>
+      <mdt-cell>{{inhabitant.last_name +' '+inhabitant.first_name+', '+inhabitant.middle_name}}</mdt-cell>
+      <mdt-cell>{{currentDate._date | amDifference : inhabitant.birthdate : 'year'}}</mdt-cell>
+      <mdt-cell>{{inhabitant.gender}}</mdt-cell>
+      <mdt-cell>{{inhabitant.cp_number}}</mdt-cell>
+      <mdt-cell>{{inhabitant.gender}}</mdt-cell>
+      <mdt-cell>{{inhabitant.gender}}</mdt-cell>
+      <mdt-cell>{{inhabitant.gender}}</mdt-cell>
+      <mdt-cell>{{inhabitant.gender}}</mdt-cell>
+      <mdt-cell>{{inhabitant.gender}}</mdt-cell>
+      <mdt-cell>{{inhabitant.gender}}</mdt-cell>
+      <mdt-cell>{{inhabitant.gender}}</mdt-cell>
+      <mdt-cell>{{inhabitant.gender}}</mdt-cell>
+      <mdt-cell>{{inhabitant.medical_records.ncdradf_date_followup | amDateFormat:'MMM DD YYYY'}}</mdt-cell>
+    </mdt-row>
+  </mdt-table>

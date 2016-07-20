@@ -17,7 +17,8 @@ module App.Config {
                 'ncd.user', 
                 'notifications', 
                 'ncd.report',
-                'mdDataTable']
+                'mdDataTable',
+                'angularMoment']
         }
     }
     

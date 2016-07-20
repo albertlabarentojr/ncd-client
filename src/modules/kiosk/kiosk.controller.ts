@@ -213,6 +213,8 @@ module App.Controller {
 
         templateUrl : string;
 
+        datesCollections : string[] = [ 'ncdradf_date_assessed', 'ncdradf_date_followup', 'stop_smoking_program_date_assessed', 'stop_smoking_program_date_followup' ];
+
         constructor( $scope : ng.IScope, $rootScope : ng.IRootScopeService, $mdSidenav : any, $state : ng.ui.IStateService, MedicalRecord :  IRepository.MedicalRecord, FormService : FormService, Inhabitant : IRepository.Inhabitant, $mdDialog : any, AppConstants : IConstants.AppConstants, KioskConstants : IConstants.ModuleConstants) {
             super($scope, $rootScope, $mdSidenav, $state);
             this.FormService = FormService;
@@ -237,6 +239,13 @@ module App.Controller {
                         } else {
                             resp = {};
                         }
+                         // transform reponse dates to new Date()
+                        _.forEach(this.datesCollections, (item : any) => {
+                            console.log(_.indexOf(_.keys(resp), item));
+                            if(_.indexOf(_.keys(resp), item)) {
+                                resp[item] = new Date(resp[item]);
+                            }
+                        });
                         console.log(resp);
                         this.FormService.updateDataSet(resp);
                         this.$state.go(sn);

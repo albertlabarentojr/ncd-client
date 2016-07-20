@@ -8,7 +8,11 @@ module App.Modules.Forms {
 
     export interface IForms {
         form_no? : string; // form recorded
-        record_no : string; // record taken
+        record_no : string; // record taken,
+        ncdradf_date_assessed? : Date;
+        ncdradf_date_followup? : Date;
+        stop_smoking_program_date_assessed? : Date;
+        stop_smoking_program_date_followup? : Date;
     }
 
     export interface IMedicalHistory extends IForms {
@@ -43,9 +47,9 @@ module App.Modules.Forms {
         first_name : string;
         middle_name : string;
         last_name : string;
+        birthdate : string | Date;
         civil_status? : string;
         gender : string;
-        birthdate : string | Date;
         no_of_children? : number;
         educational_attainment? : string;
         occupation? : string;
@@ -55,7 +59,7 @@ module App.Modules.Forms {
         barangay : string;
         purok_street : string;
         city : string;
-        medical_record? : string;
+        medical_records? : string;
     }
 
     export interface IRiskFactors extends IForms {

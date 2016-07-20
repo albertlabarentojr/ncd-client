@@ -1,5 +1,19 @@
 <div class="md-inline-form" layout="column"  md-theme="docs-dark" ng-controller="FormsController as formController">
     <md-content layout-padding layout-margin >
+        <!--<fieldset class="standard">
+            <legend>Medical Dates</legend>
+            <material-row 
+                ng-repeat="row in formController.medical_dates_rows.basic"
+                questions="formController.forms.medical_dates.basic" 
+                start-at="row.startAt" end-at="row.endAt" 
+                form-model="formController.formModel" submit-model="formController.submitModel">
+            </material-row>
+        </fieldset>-->
+        
+        <!--Medical Dates Fragment-->
+        <ng-include src="formController.includeMedicalDatesTemplate"></ng-include>
+        <!--End Medical Dates Fragment-->
+        
         <fieldset class="standard">
             <legend>Karamdaman</legend>
             <material-row 

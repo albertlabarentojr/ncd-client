@@ -11,11 +11,6 @@ module App.Services {
         parseDates = (dateKeys : string[]) => {
 
         }
-
-        getAge = (birthdate : string) => {
-            moment(birthdate).diff(moment(), 'year');
-        }
-
     }
 
 }

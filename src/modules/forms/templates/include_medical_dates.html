@@ -1,0 +1,9 @@
+<fieldset class="standard">
+    <legend>Medical Dates</legend>
+    <material-row 
+        ng-repeat="row in formController.medical_dates_rows.basic"
+        questions="formController.forms.medical_dates.basic" 
+        start-at="row.startAt" end-at="row.endAt" 
+        form-model="formController.formModel" submit-model="formController.submitModel">
+    </material-row>
+</fieldset>

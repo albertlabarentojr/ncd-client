@@ -1,14 +1,19 @@
-<mdt-table paginated-rows="{isEnabled: true, rowsPerPageValues: [5,10,20,100]}">
+<md-button class="md-raised md-primary" ng-click="reportCtrl.export()">Export to Excel</md-button>
+<mdt-table paginated-rows="{isEnabled: true, rowsPerPageValues: [5,10,20,100]}" class="export-table">
     <mdt-header-row>
       <mdt-column align-rule="left">Last Name</mdt-column>
       <mdt-column align-rule="right">First Name</mdt-column>
       <mdt-column align-rule="right">Middle Name</mdt-column>
       <mdt-column align-rule="right">Gender</mdt-column>
+      <mdt-column align-rule="right">Age</mdt-column>
+      <!--<<mdt-column align-rule="right">Address</mdt-column>
+      <mdt-column align-rule="right">Smoking Status</mdt-column>-->
     </mdt-header-row>
     <mdt-row ng-repeat="inhabitant in reportCtrl.inhabitants">
       <mdt-cell>{{inhabitant.last_name}}</mdt-cell>
       <mdt-cell>{{inhabitant.first_name}}</mdt-cell>
       <mdt-cell>{{inhabitant.middle_name}}</mdt-cell>
       <mdt-cell>{{inhabitant.gender}}</mdt-cell>
+      <mdt-cell>{{currentDate._date | amDifference : inhabitant.birthdate : 'year'}}</mdt-cell>
     </mdt-row>
   </mdt-table>
