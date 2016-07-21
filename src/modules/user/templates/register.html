@@ -6,28 +6,28 @@
     <md-content layout="column" class="md-padding">
       <md-input-container>
         <label>First Name</label>
-        <input type="text" ng-model="first_name"/>
+        <input type="text" ng-model="userController.user.first_name"/>
       </md-input-container>
       <md-input-container>
         <label>Last Name</label>
-        <input type="text" ng-model="last_name"/>
+        <input type="text" ng-model="userController.user.last_name"/>
       </md-input-container>
       <md-input-container>
         <label>EmailAddress</label>
-        <input type="email" ng-model="name"/>
+        <input type="email" ng-model="userController.user.email_address"/>
       </md-input-container>
       <md-input-container>
         <label>Password</label>
-        <input type="password" ng-model="password"/>
+        <input type="password" ng-model="userController.user.password"/>
       </md-input-container>
       <md-input-container>
         <label>Confirm Password</label>
-        <input type="password" ng-model="confirm_password"/>
+        <input type="password" ng-model="userController.user.confirm_password"/>
       </md-input-container>
       <div layout="row" layout-align="center center" style="padding-top:20px;">
         <md-button ui-sref="login" md-no-ink="md-no-ink">Back to Login</md-button>
         <div flex="flex"></div>
-        <md-button class="md-raised md-primary">Register</md-button>
+        <md-button class="md-raised md-primary" ng-click="userController.register(userController.user)">Register</md-button>
       </div>
     </md-content>
   </div>

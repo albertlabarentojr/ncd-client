@@ -18,12 +18,13 @@ module App.Config {
                 'notifications', 
                 'ncd.report',
                 'mdDataTable',
-                'angularMoment']
+                'angularMoment',
+                'LocalStorageModule']
         }
     }
     
     export const Variables : App.Contracts.Constants.AppConstants = {
-        appName : '[Your App Name]',
+        appName : 'ncd',
         
         environment : 'development',
         

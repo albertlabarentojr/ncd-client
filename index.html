@@ -8,18 +8,38 @@
         <link rel="stylesheet" href="./bower_components/mdDataTable/dist/md-data-table-style.css">
         <link rel="stylesheet" href="/css/style.css">
     </head>
-    <body ng-controller="ModuleController">
+    <body>
     <!-- Banner -->
-        <div layout="column" class="md-whiteframe-1dp">
+        <div layout="column" class="md-whiteframe-1dp" ng-controller="UserController as userCtrl">
             <md-toolbar style="background-color : #1565C0">
             <div class="md-toolbar-tools">
                 <h2>
                 <span>Non-Communicable Disease Risk Assessment</span>
                 </h2>
                 <span flex></span>
-                <md-button class="md-fab  md-mini md-raised " aria-label="User" >
-                    <ng-md-icon icon="person" style="color : black"></ng-md-icon> 
-                </md-button>
+                <md-menu md-position-mode="target-right target" >
+                    <md-button class="md-fab  md-mini md-raised " aria-label="User" ng-click="$mdOpenMenu($event)">
+                        <ng-md-icon icon="person" style="color : black"></ng-md-icon> 
+                    </md-button>
+                    <md-menu-content width="4" >
+                        <md-menu-item>
+                            <md-button ng-click="userCtrl.logout()">
+                                <div layout="row" flex>
+                                    <p flex>Logout</p>
+                                    <ng-md-icon icon="logout" style="color : black"></ng-md-icon> 
+                                </div>
+                            </md-button>
+                        </md-menu-item>
+                        <md-menu-item>
+                            <md-button ng-click="userCtrl.announceClick($index)">
+                                <div layout="row" flex>
+                                    <p flex>Edit User Profile</p>
+                                    <ng-md-icon icon="person" style="color : black"></ng-md-icon> 
+                                </div>
+                            </md-button>
+                        </md-menu-item>
+                    </md-menu-content>
+                 </md-menu>
             </div>
             </md-toolbar>
         </div>

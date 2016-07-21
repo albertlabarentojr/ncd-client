@@ -8,9 +8,14 @@ module App.Modules.User {
 
     import IConstants = App.Contracts.Constants;
 
+    export interface IUserConstants extends IConstants.ModuleConstants {
+        userKey : string;
+    }
+
     const UserConstants = (() => {
-        let cons : IConstants.ModuleConstants = {
-            templateUrl : 'user/templates/'
+        let cons : IUserConstants = {
+            templateUrl : 'user/templates/',
+            userKey : 'user'
         }
         return cons;
     })();

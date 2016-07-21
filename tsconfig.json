@@ -36,6 +36,7 @@
         "./src/modules/forms/forms.service.ts",
         "./src/modules/user/user.ts",
         "./src/modules/user/user.controller.ts",
+        "./src/modules/user/user.auth.service.ts",
         "./src/modules/report/report.ts",
         "./src/modules/report/report.controller.ts",
         "./src/modules/module_name/module.main.ts",

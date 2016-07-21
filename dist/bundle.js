@@ -22,11 +22,12 @@ var App;
                     'notifications',
                     'ncd.report',
                     'mdDataTable',
-                    'angularMoment']
+                    'angularMoment',
+                    'LocalStorageModule']
             }
         };
         Config.Variables = {
-            appName: '[Your App Name]',
+            appName: 'ncd',
             environment: 'development',
             protocol: 'http://',
             baseUrl: 'anl.dev',
@@ -77,7 +78,7 @@ var App;
             };
             return cons;
         })();
-        function Config($urlRouterProvider, $stateProvider, $mdThemingProvider) {
+        function Config($urlRouterProvider, $stateProvider, $mdThemingProvider, localStorageServiceProvider, RestangularProvider) {
             $urlRouterProvider.otherwise('/');
             $stateProvider
                 .state('main', {
@@ -86,12 +87,29 @@ var App;
             $mdThemingProvider.theme('docs-dark', 'default')
                 .primaryPalette('yellow')
                 .dark();
+            localStorageServiceProvider
+                .setPrefix(App.Config.Variables.appName)
+                .setStorageType('sessionStorage');
         }
-        Config.$inject = ['$urlRouterProvider', '$stateProvider', '$mdThemingProvider'];
-        function Init(Restangular, AppConstants) {
+        Config.$inject = ['$urlRouterProvider', '$stateProvider', '$mdThemingProvider', 'localStorageServiceProvider', 'RestangularProvider'];
+        function Init(Restangular, AppConstants, UserAuthService) {
             Restangular.setBaseUrl(AppConstants.apiUrl);
+            Restangular.addFullRequestInterceptor(function (element, operation, what, url, headers, params, httpConfig) {
+                var requestParam = {}, isAuthenticated = UserAuthService.isAuthenticated();
+                if (isAuthenticated) {
+                    var token = UserAuthService.getToken();
+                    if (token) {
+                    }
+                }
+                return {
+                    element: element,
+                    params: _.extend(params, requestParam),
+                    headers: headers,
+                    httpConfig: httpConfig
+                };
+            });
         }
-        Init.$inject = ['Restangular', 'AppConstants'];
+        Init.$inject = ['Restangular', 'AppConstants', 'UserAuthService'];
         angularModule
             .config(Config)
             .run(Init)
@@ -2009,7 +2027,8 @@ var App;
         (function (User) {
             var UserConstants = (function () {
                 var cons = {
-                    templateUrl: 'user/templates/'
+                    templateUrl: 'user/templates/',
+                    userKey: 'user'
                 };
                 return cons;
             })();
@@ -2045,15 +2064,118 @@ var App;
             var BaseController = App.Base.BaseController;
             var UserController = (function (_super) {
                 __extends(UserController, _super);
-                function UserController($scope, $rootScope) {
+                function UserController($scope, $rootScope, UserAuthService, $mdDialog, $state) {
+                    var _this = this;
                     _super.call(this, $scope, $rootScope);
+                    this.UserAuthService = UserAuthService;
+                    this.$mdDialog = $mdDialog;
+                    this.$state = $state;
+                    this.status = {
+                        isUnauthorized: false
+                    };
+                    this.register = function (new_user) {
+                        _this.UserAuthService.register(new_user)
+                            .then(function (resp) {
+                            _this.$state.go('login');
+                            var alert = _this.$mdDialog.alert({
+                                title: 'You have successfully Registered!',
+                                textContent: 'You may Login!',
+                                ok: 'Close'
+                            });
+                            _this.$mdDialog.show(alert);
+                        });
+                    };
+                    this.login = function (user) {
+                        _this.UserAuthService.login(user)
+                            .then(null)
+                            .catch(function (err) {
+                            _this.user = null;
+                            _this.status.isUnauthorized = true;
+                            var alert = _this.$mdDialog.alert({
+                                title: 'Login Failed!',
+                                textContent: 'Please Enter corrent Email and Password!',
+                                ok: 'Close'
+                            });
+                            _this.$mdDialog.show(alert);
+                        });
+                    };
+                    this.logout = function () {
+                        _this.UserAuthService.logout();
+                    };
                 }
-                UserController.$inject = ['$scope', '$rootScope'];
+                UserController.$inject = ['$scope', '$rootScope', 'UserAuthService', '$mdDialog', '$state'];
                 return UserController;
             }(BaseController));
             userModule.controller('UserController', UserController);
         })(User = Controller.User || (Controller.User = {}));
     })(Controller = App.Controller || (App.Controller = {}));
+})(App || (App = {}));
+var App;
+(function (App) {
+    var Modules;
+    (function (Modules) {
+        var User;
+        (function (User) {
+            var UserAuthService = (function () {
+                function UserAuthService(UserConstants, AppConstants, Restangular, localStorageService, $state) {
+                    var _this = this;
+                    this.UserConstants = UserConstants;
+                    this.AppConstants = AppConstants;
+                    this.Restangular = Restangular;
+                    this.localStorageService = localStorageService;
+                    this.$state = $state;
+                    this.register = function (new_user) {
+                        return _this.Restangular.all('register').customPOST(new_user);
+                    };
+                    this.login = function (user) {
+                        return _this.Restangular.all('authenticate').customPOST(user)
+                            .then(_this.authorizedUser.bind(_this));
+                    };
+                    this.unauthorizedUser = function (err) {
+                        console.log('Unauthorized login!', err);
+                        return err;
+                    };
+                    this.authorizedUser = function (resp) {
+                        if (resp) {
+                            var userObj = {
+                                user: {
+                                    first_name: resp.user.first_name,
+                                    last_name: resp.user.last_name,
+                                    email_address: resp.user.email_address
+                                },
+                                token: resp.token
+                            };
+                            _this.setUser(userObj);
+                        }
+                        _this.$state.go('kiosk.inhabitant');
+                    };
+                    this.logout = function () {
+                        _this.$state.go('login');
+                        return _this.localStorageService.remove(_this.UserConstants.userKey);
+                    };
+                    this.isAuthenticated = function () {
+                        return _this.localStorageService.get(_this.UserConstants.userKey);
+                    };
+                    this.getAuthenticated = function () {
+                        var authUser = _this.isAuthenticated();
+                        if (authUser)
+                            return authUser.user;
+                        return null;
+                    };
+                    this.setUser = function (user) {
+                        return _this.localStorageService.set(_this.UserConstants.userKey, user);
+                    };
+                    this.getToken = function () {
+                        return _this.localStorageService.get(_this.UserConstants.userKey).token;
+                    };
+                }
+                UserAuthService.$inject = ['UserConstants', 'AppConstants', 'Restangular', 'localStorageService', '$state'];
+                return UserAuthService;
+            }());
+            User.UserAuthService = UserAuthService;
+            angularModule.service('UserAuthService', UserAuthService);
+        })(User = Modules.User || (Modules.User = {}));
+    })(Modules = App.Modules || (App.Modules = {}));
 })(App || (App = {}));
 var reportModule;
 var App;

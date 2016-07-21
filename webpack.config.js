@@ -19,7 +19,8 @@ module.exports = {
         "./node_modules/angular-ui-router/release/angular-ui-router.min.js",
         "./lib/namespace.js",
         "./bower_components/mdDataTable/dist/md-data-table-templates.js",
-        "./bower_components/mdDataTable/dist/md-data-table.js"
+        "./bower_components/mdDataTable/dist/md-data-table.js",
+        "./node_modules/angular-local-storage/dist/angular-local-storage.min.js"
     ],
     output : {
         filename : './dist/lib.js'
