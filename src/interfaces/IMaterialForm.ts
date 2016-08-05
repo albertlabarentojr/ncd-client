@@ -15,3 +15,4 @@ module App.Contracts.MaterialForm {
         searchTerm? : string;
     }
 }
+

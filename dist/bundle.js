@@ -34,7 +34,7 @@ var App;
             apiUrl: '192.10.10.1',
             api: {
                 development: {
-                    url: 'localhost:3000/api',
+                    url: '192.168.10.11:3000/api',
                     version: 'v1'
                 },
                 production: {
